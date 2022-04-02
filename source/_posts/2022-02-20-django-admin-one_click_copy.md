@@ -14,10 +14,34 @@ class NoteAdmin(admin.ModelAdmin):
 
     @admin.display(description='操作')
     def one_click_copy(self, obj):
+        # 需要https
         return format_html(f"""
             <a id="{obj.id}" data-value="{obj.serial_no}" href="javascript:;" 
             onclick=";let text=document.getElementById('{obj.id}').getAttribute('data-value'); 
             navigator.clipboard.writeText(text);">一键复制</a>
+        """)
+```
+
+```python
+@admin.register(Note)
+class NoteAdmin(admin.ModelAdmin):
+    list_display = [..., "one_click_copy" ]
+
+    @admin.display(description='操作')
+    def one_click_copy(self, obj):
+        return format_html(f"""
+            <a id="{obj.id}" data-value="{obj.serial_no}" href="javascript:;" 
+            onclick=";
+            const oInput = document.createElement('textarea');
+            const text=window.location.protocol+'//'+window.location.host+'/core/note/detail/' 
+                      +document.getElementById('{obj.id}').getAttribute('data-value'); 
+            oInput.value = text;
+            oInput.readOnly = 'readOnly';
+            document.body.appendChild(oInput);
+            oInput.select();
+            document.execCommand('copy');
+            oInput.blur();
+            document.body.removeChild(oInput);">一键复制</a>
         """)
 ```
 
