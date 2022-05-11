@@ -7,7 +7,7 @@ comments: false
 
 ## 关于
 
-喜欢 Coding, 却码不好.
+喜欢 Coding.
 
 ## 联系方式
 
