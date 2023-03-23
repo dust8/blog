@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="查看环境查看内存情况free -h 命令查看内存情况和swap分区大小123              total        used        free      shared  buff/cache   availableMem:          1.9Gi       259Mi       1.4Gi       1.0Mi       207Mi       1.5GiSwap">
+<meta name="keywords" content="ubuntu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu设置虚拟内存">
+<meta property="og:url" content="https://dust8.github.io/blog/2023/03/23/ubuntu-swap/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="查看环境查看内存情况free -h 命令查看内存情况和swap分区大小123              total        used        free      shared  buff/cache   availableMem:          1.9Gi       259Mi       1.4Gi       1.0Mi       207Mi       1.5GiSwap">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ubuntu设置虚拟内存">
+<meta name="twitter:description" content="查看环境查看内存情况free -h 命令查看内存情况和swap分区大小123              total        used        free      shared  buff/cache   availableMem:          1.9Gi       259Mi       1.4Gi       1.0Mi       207Mi       1.5GiSwap">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2023/03/23/ubuntu-swap/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ubuntu设置虚拟内存 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2023/03/23/ubuntu-swap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ubuntu设置虚拟内存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-23 06:15:31 / 修改时间：12:45:57" itemprop="dateCreated datePublished" datetime="2023-03-23T06:15:31+00:00">2023-03-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="查看环境"><a href="#查看环境" class="headerlink" title="查看环境"></a>查看环境</h2><h3 id="查看内存情况"><a href="#查看内存情况" class="headerlink" title="查看内存情况"></a>查看内存情况</h3><p><code>free -h</code> 命令查看内存情况和swap分区大小<br><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">              total        used        free      <span class="keyword">shared</span>  buff/cache   available</span><br><span class="line">Mem:          <span class="number">1.9</span>Gi       <span class="number">259</span>Mi       <span class="number">1.4</span>Gi       <span class="number">1.0</span>Mi       <span class="number">207</span>Mi       <span class="number">1.5</span>Gi</span><br><span class="line">Swap:         <span class="number">0</span>B          <span class="number">0</span>B       <span class="number">0</span>B</span><br></pre></td></tr></table></figure></p>
+<p>可以看到swap目前是0, 也就是没有设置虚拟内存.</p>
+<h3 id="查看磁盘空间大小"><a href="#查看磁盘空间大小" class="headerlink" title="查看磁盘空间大小"></a>查看磁盘空间大小</h3><p><code>df -h</code> 命令查看磁盘空间情况. 因为下面需要在磁盘创建一个文件当作虚拟内存, 所以看下在哪个目录下创建比较好.<br><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">overlay         <span class="number">5.8</span>G  <span class="number">589</span>M  <span class="number">5.0</span>G  <span class="number">11</span>% /</span><br><span class="line">devtmpfs        <span class="number">887</span>M     <span class="number">0</span>  <span class="number">887</span>M   <span class="number">0</span>% /dev</span><br><span class="line">tmpfs           <span class="number">954</span>M     <span class="number">0</span>  <span class="number">954</span>M   <span class="number">0</span>% /dev/shm</span><br><span class="line">tmpfs           <span class="number">191</span>M  <span class="number">1.8</span>M  <span class="number">189</span>M   <span class="number">1</span>% /run</span><br><span class="line">tmpfs           <span class="number">5.0</span>M     <span class="number">0</span>  <span class="number">5.0</span>M   <span class="number">0</span>% /run/lock</span><br><span class="line">tmpfs           <span class="number">954</span>M     <span class="number">0</span>  <span class="number">954</span>M   <span class="number">0</span>% /sys/fs/cgroup</span><br><span class="line">/dev/mmcblk0p1  <span class="number">128</span>M   <span class="number">63</span>M   <span class="number">66</span>M  <span class="number">49</span>% /boot</span><br><span class="line">/dev/mmcblk0p7   <span class="number">15</span>G  <span class="number">4.7</span>G  <span class="number">9.9</span>G  <span class="number">33</span>% /data</span><br><span class="line">/dev/mmcblk0p4  <span class="number">2.4</span>G  <span class="number">2.2</span>G  <span class="number">157</span>M  <span class="number">94</span>% /media/root-ro</span><br><span class="line">/dev/mmcblk0p5  <span class="number">5.8</span>G  <span class="number">589</span>M  <span class="number">5.0</span>G  <span class="number">11</span>% /media/root-rw</span><br><span class="line">/dev/mmcblk0p6  <span class="number">2.0</span>G  <span class="number">226</span>M  <span class="number">1.6</span>G  <span class="number">13</span>% /opt</span><br><span class="line">/dev/mmcblk0p2  <span class="number">2.9</span>G   <span class="number">52</span>M  <span class="number">2.8</span>G   <span class="number">2</span>% /recovery</span><br><span class="line">tmpfs           <span class="number">191</span>M     <span class="number">0</span>  <span class="number">191</span>M   <span class="number">0</span>% /run/user/<span class="number">1000</span></span><br></pre></td></tr></table></figure></p>
+<p>可以看到<code>/data</code>目录空间比较大, 可以在此目录创建.</p>
+<h2 id="创建虚拟内存"><a href="#创建虚拟内存" class="headerlink" title="创建虚拟内存"></a>创建虚拟内存</h2><p>1.创建swap文件<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd <span class="attribute">if</span>=/dev/zero <span class="attribute">of</span>=/data/swapfile <span class="attribute">bs</span>=1M <span class="attribute">count</span>=4096</span><br></pre></td></tr></table></figure></p>
+<p><code>/data/swapfile</code> 就是创建的虚拟内存文件路径, <code>bs=1M</code> 代表文件大小单位是1M, <code>count=4096</code> 代表创建多少个单位, 合起来就是4个G.</p>
+<ol start="2">
+<li><p>设置swap文件</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">sudo</span> mkswap /<span class="class"><span class="keyword">data</span>/swapfile</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>激活swap文件</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">sudo</span> swapon /<span class="class"><span class="keyword">data</span>/swapfile</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>校验是否生效<br>运行 <code>free -h</code>, 查看<code>swap</code>部分<code>total</code>是否为0, 不是0则生效.</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">              total        used        free      <span class="keyword">shared</span>  buff/cache   available</span><br><span class="line">Mem:          <span class="number">1.9</span>Gi       <span class="number">259</span>Mi       <span class="number">1.4</span>Gi       <span class="number">1.0</span>Mi       <span class="number">207</span>Mi       <span class="number">1.5</span>Gi</span><br><span class="line">Swap:         <span class="number">4.0</span>Gi          <span class="number">0</span>B       <span class="number">4.0</span>Gi</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="设置开机启动"><a href="#设置开机启动" class="headerlink" title="设置开机启动"></a>设置开机启动</h2><p>上面的设置是临时生效的, 为了重启仍然生效, 需要修改 <code>/etc/fstab</code> 文件, 设置开机自动挂载.<br>在 <code>/etc/fstab</code> 文件后面添加一行.<br><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/swapfile  swap    swap   defaults  <span class="number">0</span>   <span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>上面是一般情况就设置成功了, 有时碰到特殊情况, 例如系统是定制的, <code>/etc/fstab</code> 文件重启后会被还原为默认配置. 这时可以通过 <code>systemd</code> 来管理开机启动, 也就是设置一个开机启动的服务, 该服务启动后执行激活swap文件命令.<br>在 <code>/usr/lib/systemd/system/</code> 目录创建一个 <code>my-swap.service</code> 文件, 文件内容为<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=my swap</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">ExecStart</span>=sudo swapon /data/swapfile</span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure></p>
+<p>完成后可以通过<code>systemctl cat my-swap</code> 查看该配置, 目测下是否正确.<br>运行<code>systemctl start my-swap</code> 执行该服务, 然后运行<code>free -h</code> 检查是否激活swap成功, 如果没有就在检查下配置.<br>运行<code>systemctl enable my-swap</code> 则正式启用该服务, 重启后会自动运行该服务.</p>
+<h2 id="取消虚拟内存"><a href="#取消虚拟内存" class="headerlink" title="取消虚拟内存"></a>取消虚拟内存</h2><ol>
+<li>运行 <code>sudo swapoff /data/swapfile</code> 关闭系统交换区</li>
+<li>运行 <code>sudo rm /data/swapfile</code> 删除系统交换区文件, 释放占用的磁盘空间.</li>
+<li>取消开机启动. 删除添加到 <code>/etc/fstab</code> 里的<code>/data/swapfile</code> 那一行. 如果使用的是<code>systemd</code>, 则运行<code>systemctl disable my-swap</code>, 在删除<code>my-swap.service</code>文件.</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="http://ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">Systemd 入门教程：命令篇</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2023/02/17/video-skip-frame/" rel="prev" title="视频流跳帧处理">
+      <i class="fa fa-chevron-left"></i> 视频流跳帧处理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看环境"><span class="nav-number">1.</span> <span class="nav-text">查看环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看内存情况"><span class="nav-number">1.1.</span> <span class="nav-text">查看内存情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看磁盘空间大小"><span class="nav-number">1.2.</span> <span class="nav-text">查看磁盘空间大小</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建虚拟内存"><span class="nav-number">2.</span> <span class="nav-text">创建虚拟内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置开机启动"><span class="nav-number">3.</span> <span class="nav-text">设置开机启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取消虚拟内存"><span class="nav-number">4.</span> <span class="nav-text">取消虚拟内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

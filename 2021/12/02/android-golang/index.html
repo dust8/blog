@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="写了个golang程序来根据当前ip自动修改阿里云ecs的安全组.现在需要在手机运行,找了下资料实现了.android未root的情况下. 编译出android环境的程序把main.go文件编译出anroid arm64的程序.大部分android都是arm64, 可以在anroid上运行getprop ro.product.cpu.abi查看具体架构.1234set CGO_ENABLED=0s">
+<meta name="keywords" content="android,golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android运行golang程序">
+<meta property="og:url" content="https://dust8.github.io/blog/2021/12/02/android-golang/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="写了个golang程序来根据当前ip自动修改阿里云ecs的安全组.现在需要在手机运行,找了下资料实现了.android未root的情况下. 编译出android环境的程序把main.go文件编译出anroid arm64的程序.大部分android都是arm64, 可以在anroid上运行getprop ro.product.cpu.abi查看具体架构.1234set CGO_ENABLED=0s">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android运行golang程序">
+<meta name="twitter:description" content="写了个golang程序来根据当前ip自动修改阿里云ecs的安全组.现在需要在手机运行,找了下资料实现了.android未root的情况下. 编译出android环境的程序把main.go文件编译出anroid arm64的程序.大部分android都是arm64, 可以在anroid上运行getprop ro.product.cpu.abi查看具体架构.1234set CGO_ENABLED=0s">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2021/12/02/android-golang/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>android运行golang程序 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2021/12/02/android-golang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          android运行golang程序
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-02 05:15:31" itemprop="dateCreated datePublished" datetime="2021-12-02T05:15:31+00:00">2021-12-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>写了个golang程序来根据当前ip自动修改阿里云ecs的安全组.现在需要在手机运行,找了下资料实现了.<br>android未root的情况下.</p>
+<h2 id="编译出android环境的程序"><a href="#编译出android环境的程序" class="headerlink" title="编译出android环境的程序"></a>编译出android环境的程序</h2><p>把main.go文件编译出anroid arm64的程序.大部分android都是arm64, 可以在anroid上运行<code>getprop ro.product.cpu.abi</code>查看具体架构.<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">set</span> <span class="attribute">CGO_ENABLED</span>=0</span><br><span class="line"><span class="builtin-name">set</span> <span class="attribute">GOOS</span>=linux</span><br><span class="line"><span class="builtin-name">set</span> <span class="attribute">GOARCH</span>=arm64</span><br><span class="line">go build -o xxx main.go</span><br></pre></td></tr></table></figure></p>
+<h2 id="运行环境termux"><a href="#运行环境termux" class="headerlink" title="运行环境termux"></a>运行环境termux</h2><p><a href="https://termux.com/" target="_blank" rel="noopener">termux</a> 是免费的android终端模拟器.<br>打开termux, 安装下面的包.</p>
+<h3 id="安装termux-setup-storage"><a href="#安装termux-setup-storage" class="headerlink" title="安装termux-setup-storage"></a>安装termux-setup-storage</h3><p>默认工作目录是termux的安装目录,想要获取手机存储则需要安装它.<br>在终端里面输入 <code>termux-setup-storage</code>, 安装好了后termux主目录会生成 <code>storage</code> 子目录,这时我们就可以访问手机存储了</p>
+<h3 id="安装termux-chroot"><a href="#安装termux-chroot" class="headerlink" title="安装termux-chroot"></a>安装termux-chroot</h3><p>termux没有传统的linux文件系统, 例如<code>/etc</code> ,这个可以设置一个最小的正常的文件系统.<br>这样就可以通过修改文件<code>/etc/resolv.conf</code> 来设置 dns<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkg <span class="keyword">install</span> termux-chroot</span><br></pre></td></tr></table></figure></p>
+<h3 id="安装vim"><a href="#安装vim" class="headerlink" title="安装vim"></a>安装vim</h3><p>golang程序里面有网络访问, 在termux里面报<code>read: connection refused</code> 错误,<br>所以要用它来改dns设置<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkg <span class="keyword">install</span> vim</span><br></pre></td></tr></table></figure></p>
+<p>设置dns<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">vim</span> <span class="string">/etc/resolv.conf</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># /etc/resolv.conf</span></span><br><span class="line"><span class="string">nameserver</span> <span class="number">8.8</span><span class="number">.8</span><span class="number">.8</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="运行golang"><a href="#运行golang" class="headerlink" title="运行golang"></a>运行golang</h2><p>在手机存储目录是没有权限的,需要把程序复制到termux目录<br><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp xxx ~<span class="string">/xxx</span></span><br><span class="line"><span class="string">./xxx</span></span><br></pre></td></tr></table></figure></p>
+<p>这样就好了</p>
+<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line"># main.<span class="keyword">go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/json"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io/ioutil"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"path"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/aliyun/alibaba-cloud-sdk-go/services/ecs"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ConfigurationModel <span class="keyword">struct</span> &#123;</span><br><span class="line">	ACCESS_KEY_ID     <span class="keyword">string</span></span><br><span class="line">	ACCESS_KEY_SECRET <span class="keyword">string</span></span><br><span class="line">	REGION_ID         <span class="keyword">string</span></span><br><span class="line">	SECURITY_GROUP_ID <span class="keyword">string</span></span><br><span class="line">	IP_PROTOCOL       <span class="keyword">string</span></span><br><span class="line">	PORT_RANGE        <span class="keyword">string</span></span><br><span class="line">	DESCRIPTION       <span class="keyword">string</span></span><br><span class="line">	DURATION          <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> IpResponse <span class="keyword">struct</span> &#123;</span><br><span class="line">	Origin <span class="keyword">string</span> <span class="string">`json:"origin"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> configModel ConfigurationModel</span><br><span class="line"></span><br><span class="line"><span class="comment">// 公网 IP 查询站点的 URL 地址。</span></span><br><span class="line"><span class="keyword">const</span> GetPublicIpUrl = <span class="string">"http://www.httpbin.org/ip"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	loadConfig()</span><br><span class="line">	fmt.Println(<span class="string">"配置："</span>, configModel.SECURITY_GROUP_ID)</span><br><span class="line"></span><br><span class="line">	filename := configModel.SECURITY_GROUP_ID + <span class="string">"_ip.txt"</span></span><br><span class="line">	oldIp := readIp(filename)</span><br><span class="line">	fmt.Printf(<span class="string">"最后IP记录为: %s\n"</span>, oldIp)</span><br><span class="line"></span><br><span class="line">	ecsClient, err := ecs.NewClientWithAccessKey(configModel.REGION_ID, configModel.ACCESS_KEY_ID, configModel.ACCESS_KEY_SECRET)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Handle exceptions</span></span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		newIp := getPublicIp()</span><br><span class="line">		<span class="keyword">if</span> oldIp != newIp &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"IP变更: %s =&gt; %s\n"</span>, oldIp, newIp)</span><br><span class="line"></span><br><span class="line">			delSecurityGroup(ecsClient, configModel, oldIp)</span><br><span class="line">			addSecurityGroup(ecsClient, configModel, newIp)</span><br><span class="line"></span><br><span class="line">			oldIp = newIp</span><br><span class="line">			writeIp(filename, newIp)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		time.Sleep(time.Duration(configModel.DURATION) * time.Second)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">loadConfig</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> configFile <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	dir, _ := os.Getwd()</span><br><span class="line">	configFile = path.Join(dir, <span class="string">"settings.json"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 打开配置文件，并进行反序列化。</span></span><br><span class="line">	f, err := os.Open(configFile)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"无法打开文件：%s"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line">	data, _ := ioutil.ReadAll(f)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := json.Unmarshal(data, &amp;configModel); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"数据反序列化失败：%s"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getPublicIp</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	resp, err := http.Get(GetPublicIpUrl)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Printf(<span class="string">"获取公网 IP 出现错误，错误信息：%s"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"></span><br><span class="line">	bytes, _ := ioutil.ReadAll(resp.Body)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> res IpResponse</span><br><span class="line">	<span class="keyword">if</span> err := json.Unmarshal(bytes, &amp;res); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"数据反序列化失败：%s"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res.Origin</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">delSecurityGroup</span><span class="params">(client *ecs.Client, configModel ConfigurationModel, ip <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	request := ecs.CreateRevokeSecurityGroupRequest()</span><br><span class="line">	request.SecurityGroupId = configModel.SECURITY_GROUP_ID</span><br><span class="line">	request.PortRange = configModel.PORT_RANGE</span><br><span class="line">	request.IpProtocol = configModel.IP_PROTOCOL</span><br><span class="line">	request.SourceCidrIp = ip</span><br><span class="line"></span><br><span class="line">	response, err := client.RevokeSecurityGroup(request)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// 异常处理</span></span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"删除安全组成功: (%d)! %s\n"</span>, response.GetHttpStatus(), ip)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">addSecurityGroup</span><span class="params">(client *ecs.Client, configModel ConfigurationModel, ip <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	request := ecs.CreateAuthorizeSecurityGroupRequest()</span><br><span class="line">	request.SecurityGroupId = configModel.SECURITY_GROUP_ID</span><br><span class="line">	request.PortRange = configModel.PORT_RANGE</span><br><span class="line">	request.IpProtocol = configModel.IP_PROTOCOL</span><br><span class="line">	request.Description = configModel.DESCRIPTION</span><br><span class="line">	request.SourceCidrIp = ip</span><br><span class="line"></span><br><span class="line">	response, err := client.AuthorizeSecurityGroup(request)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// 异常处理</span></span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"添加安全组成功: (%d)! %s\n"</span>, response.GetHttpStatus(), ip)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readIp</span><span class="params">(filename <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	ip := <span class="string">"127.0.0.1"</span></span><br><span class="line"></span><br><span class="line">	contents, err := ioutil.ReadFile(filename)</span><br><span class="line">	<span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">//因为contents是[]byte类型，直接转换成string类型后会多一行空格,需要使用strings.Replace替换换行符</span></span><br><span class="line">		ip = strings.Replace(<span class="keyword">string</span>(contents), <span class="string">"\n"</span>, <span class="string">""</span>, <span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ip</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">writeIp</span><span class="params">(filename <span class="keyword">string</span>, content <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	data := []<span class="keyword">byte</span>(content)</span><br><span class="line">	ioutil.WriteFile(filename, data, <span class="number">0644</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># settings.json</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"ACCESS_KEY_ID"</span>: <span class="string">"xx"</span>,</span><br><span class="line">    <span class="string">"ACCESS_KEY_SECRET"</span>: <span class="string">"xx"</span>,</span><br><span class="line">    <span class="string">"REGION_ID"</span>: <span class="string">"cn-shenzhen"</span>,</span><br><span class="line">    <span class="string">"SECURITY_GROUP_ID"</span>: <span class="string">"xx"</span>,</span><br><span class="line">    <span class="string">"IP_PROTOCOL"</span>: <span class="string">"tcp"</span>,</span><br><span class="line">    <span class="string">"PORT_RANGE"</span>: <span class="string">"1/65535"</span>,</span><br><span class="line">    <span class="string">"DESCRIPTION"</span>: <span class="string">"白名单ip"</span>,</span><br><span class="line">    <span class="string">"DURATION"</span>: <span class="number">60</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://www.cnblogs.com/togettoyou/p/goandroidshell.html" target="_blank" rel="noopener">使用 Android 运行 Golang 程序</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/android/" rel="tag"># android</a>
+              <a href="/blog/tags/golang/" rel="tag"># golang</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2021/11/16/django-ckeditor-video/" rel="prev" title="django ckeditor 插件上传视频">
+      <i class="fa fa-chevron-left"></i> django ckeditor 插件上传视频
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2021/12/26/edx-event-tracking/" rel="next" title="edx源码分析之event-tracking">
+      edx源码分析之event-tracking <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编译出android环境的程序"><span class="nav-number">1.</span> <span class="nav-text">编译出android环境的程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行环境termux"><span class="nav-number">2.</span> <span class="nav-text">运行环境termux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装termux-setup-storage"><span class="nav-number">2.1.</span> <span class="nav-text">安装termux-setup-storage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装termux-chroot"><span class="nav-number">2.2.</span> <span class="nav-text">安装termux-chroot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装vim"><span class="nav-number">2.3.</span> <span class="nav-text">安装vim</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行golang"><span class="nav-number">3.</span> <span class="nav-text">运行golang</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源代码"><span class="nav-number">4.</span> <span class="nav-text">源代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

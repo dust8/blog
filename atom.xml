@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Dust8 的博客</title>
+  
+  <subtitle>读书百遍其义自见</subtitle>
+  <link href="/blog/atom.xml" rel="self"/>
+  
+  <link href="https://dust8.github.io/blog/"/>
+  <updated>2023-03-23T12:45:57.126Z</updated>
+  <id>https://dust8.github.io/blog/</id>
+  
+  <author>
+    <name>dust8</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ubuntu设置虚拟内存</title>
+    <link href="https://dust8.github.io/blog/2023/03/23/ubuntu-swap/"/>
+    <id>https://dust8.github.io/blog/2023/03/23/ubuntu-swap/</id>
+    <published>2023-03-23T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.126Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;查看环境&quot;&gt;&lt;a href=&quot;#查看环境&quot; class=&quot;headerlink&quot; title=&quot;查看环境&quot;&gt;&lt;/a&gt;查看环境&lt;/h2&gt;&lt;h3 id=&quot;查看内存情况&quot;&gt;&lt;a href=&quot;#查看内存情况&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="ubuntu" scheme="https://dust8.github.io/blog/tags/ubuntu/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>视频流跳帧处理</title>
+    <link href="https://dust8.github.io/blog/2023/02/17/video-skip-frame/"/>
+    <id>https://dust8.github.io/blog/2023/02/17/video-skip-frame/</id>
+    <published>2023-02-17T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.126Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;跳帧是视频流处理中, 跳过一些帧不处理.&lt;/p&gt;
+&lt;h2 id=&quot;为什么跳帧&quot;&gt;&lt;a href=&quot;#为什么跳帧&quot; class=&quot;headerlink&quot; title=&quot;为什么跳帧&quot;&gt;&lt;/a&gt;为什么跳帧&lt;/h2&gt;&lt;p&gt;一个是设备性能低, 无法实时处理视频流, 导致任务堆积,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="视频" scheme="https://dust8.github.io/blog/tags/%E8%A7%86%E9%A2%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>监控协议笔记</title>
+    <link href="https://dust8.github.io/blog/2023/01/20/jian-kong-xie-yi/"/>
+    <id>https://dust8.github.io/blog/2023/01/20/jian-kong-xie-yi/</id>
+    <published>2023-01-20T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.126Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;摄像头通过RS485控制云台的转动.&lt;/p&gt;
+&lt;h2 id=&quot;IP监控系统协议组件&quot;&gt;&lt;a href=&quot;#IP监控系统协议组件&quot; class=&quot;headerlink&quot; title=&quot;IP监控系统协议组件&quot;&gt;&lt;/a&gt;IP监控系统协议组件&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;控制流,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="协议" scheme="https://dust8.github.io/blog/tags/%E5%8D%8F%E8%AE%AE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>webhook笔记</title>
+    <link href="https://dust8.github.io/blog/2022/12/25/webhook-note/"/>
+    <id>https://dust8.github.io/blog/2022/12/25/webhook-note/</id>
+    <published>2022-12-25T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;webhook 是用来和其他系统通信的, 把内部系统的事件发送到外部系统.&lt;/p&gt;
+&lt;p&gt;可以看作是发布/订阅模式, 或者观察者模式, 虽然有些不同, 但大致是一样的.&lt;br&gt;好处是外部系统如果想知道内部系统的事件, 不需要轮询,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="webhook" scheme="https://dust8.github.io/blog/tags/webhook/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>安防监控流媒体综述</title>
+    <link href="https://dust8.github.io/blog/2022/12/24/an-fang-jian-kong-liu-mei-ti/"/>
+    <id>https://dust8.github.io/blog/2022/12/24/an-fang-jian-kong-liu-mei-ti/</id>
+    <published>2022-12-24T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;需求&quot;&gt;&lt;a href=&quot;#需求&quot; class=&quot;headerlink&quot; title=&quot;需求&quot;&gt;&lt;/a&gt;需求&lt;/h2&gt;&lt;p&gt;把摄像头集中管理, 多端可以预览视频, 可以进行喊话,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="流媒体" scheme="https://dust8.github.io/blog/tags/%E6%B5%81%E5%AA%92%E4%BD%93/"/>
+    
+      <category term="sip" scheme="https://dust8.github.io/blog/tags/sip/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>opencv之打开视频出现旋转错误</title>
+    <link href="https://dust8.github.io/blog/2022/12/20/openv-video-error/"/>
+    <id>https://dust8.github.io/blog/2022/12/20/openv-video-error/</id>
+    <published>2022-12-20T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h2&gt;&lt;p&gt;做人脸动作活体检测的时候使用手机拍摄视频,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="opencv" scheme="https://dust8.github.io/blog/tags/opencv/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>vue之videojs</title>
+    <link href="https://dust8.github.io/blog/2022/11/24/vue-videojs/"/>
+    <id>https://dust8.github.io/blog/2022/11/24/vue-videojs/</id>
+    <published>2022-11-24T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h2&gt;&lt;p&gt;同时在&lt;code&gt;vue3&lt;/code&gt;中播放多个视频, 还能翻页.&lt;/p&gt;
+&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot;
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="vue" scheme="https://dust8.github.io/blog/tags/vue/"/>
+    
+      <category term="videojs" scheme="https://dust8.github.io/blog/tags/videojs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>vue之组合式函数</title>
+    <link href="https://dust8.github.io/blog/2022/11/22/vue-composables/"/>
+    <id>https://dust8.github.io/blog/2022/11/22/vue-composables/</id>
+    <published>2022-11-22T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h2&gt;&lt;p&gt;前端有个树形结构需要显示, 层级比较多, 达到7层, 还是需要自适应大小. 现有的组件要不层级不够, 例如像省市县这样的级联, 只有3层,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="vue" scheme="https://dust8.github.io/blog/tags/vue/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>抓包之frida解决ssl pinning</title>
+    <link href="https://dust8.github.io/blog/2022/11/06/zhuabao-frida-ssl-pinning/"/>
+    <id>https://dust8.github.io/blog/2022/11/06/zhuabao-frida-ssl-pinning/</id>
+    <published>2022-11-06T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;想看下视频网站的 &lt;code&gt;只看TA&lt;/code&gt; 怎么实现的, 所以想抓包. 情况如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;优酷电脑没有, 手机有不收费&lt;/li&gt;
+&lt;li&gt;腾讯电脑没有, 手机没有,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="抓包" scheme="https://dust8.github.io/blog/tags/%E6%8A%93%E5%8C%85/"/>
+    
+      <category term="frida" scheme="https://dust8.github.io/blog/tags/frida/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python共享内存SharedMemory踩坑记录</title>
+    <link href="https://dust8.github.io/blog/2022/10/19/python-sharedmemory/"/>
+    <id>https://dust8.github.io/blog/2022/10/19/python-sharedmemory/</id>
+    <published>2022-10-19T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h2&gt;&lt;p&gt;在处理实时视频流分析中, 如果AI推理推理时间太长导致,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="python" scheme="https://dust8.github.io/blog/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>django时区问题</title>
+    <link href="https://dust8.github.io/blog/2022/09/04/django-timezone/"/>
+    <id>https://dust8.github.io/blog/2022/09/04/django-timezone/</id>
+    <published>2022-09-04T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;问题:&lt;br&gt;启用了时区, 在原生&lt;code&gt;sql&lt;/code&gt;中没有转换时区, 导致时间筛选不正确.&lt;/p&gt;
+&lt;p&gt;原因:&lt;br&gt;是数据库保存的是&lt;code&gt;UTC&lt;/code&gt;的时间.&lt;/p&gt;
+&lt;p&gt;解决办法:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;没有多时区用户,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="django" scheme="https://dust8.github.io/blog/tags/django/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一键安装Python的shell脚本</title>
+    <link href="https://dust8.github.io/blog/2022/07/02/install-python-by-shell/"/>
+    <id>https://dust8.github.io/blog/2022/07/02/install-python-by-shell/</id>
+    <published>2022-07-02T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="python" scheme="https://dust8.github.io/blog/tags/python/"/>
+    
+      <category term="shell" scheme="https://dust8.github.io/blog/tags/shell/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python项目统一格式化方案</title>
+    <link href="https://dust8.github.io/blog/2022/07/01/python-format-project/"/>
+    <id>https://dust8.github.io/blog/2022/07/01/python-format-project/</id>
+    <published>2022-07-01T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;在代码合作编写中, 可能编辑器不同, 个人写代码习惯不同, 会出现代码不美观, 严重的会导致合并代码困难. 所以需要把代码统一格式化.&lt;/p&gt;
+&lt;h2 id=&quot;editorconfig&quot;&gt;&lt;a href=&quot;#editorconfig&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="python" scheme="https://dust8.github.io/blog/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>windows编译dlib的python安装包</title>
+    <link href="https://dust8.github.io/blog/2022/06/23/windows-dlib-python/"/>
+    <id>https://dust8.github.io/blog/2022/06/23/windows-dlib-python/</id>
+    <published>2022-06-23T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;&lt;a href=&quot;https://github.com/davisking/dlib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;dlib&lt;/a&gt;
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="python" scheme="https://dust8.github.io/blog/tags/python/"/>
+    
+      <category term="dlib" scheme="https://dust8.github.io/blog/tags/dlib/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Dockerfile修改ubuntu源</title>
+    <link href="https://dust8.github.io/blog/2022/06/22/dockerfile-ubuntu-apt-source/"/>
+    <id>https://dust8.github.io/blog/2022/06/22/dockerfile-ubuntu-apt-source/</id>
+    <published>2022-06-22T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;&lt;code&gt;Dockerfile&lt;/code&gt; 里面需要安装软件,有时国外源太慢,导致安装不了.可以通过替换 apt 源来解决&lt;/p&gt;
+&lt;h2 id=&quot;替换源&quot;&gt;&lt;a href=&quot;#替换源&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="ubuntu" scheme="https://dust8.github.io/blog/tags/ubuntu/"/>
+    
+      <category term="docker" scheme="https://dust8.github.io/blog/tags/docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>torch模型转换为paddle模型</title>
+    <link href="https://dust8.github.io/blog/2022/06/13/torch-to-paddle/"/>
+    <id>https://dust8.github.io/blog/2022/06/13/torch-to-paddle/</id>
+    <published>2022-06-13T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;因为训练好的模型框架来源比较多, 每个框架部署的方式不一样,造成不便, 可以通过模型转换统一到同一格式. 国内的框架是飞桨&lt;code&gt;paddle&lt;/code&gt;,
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="paddle" scheme="https://dust8.github.io/blog/tags/paddle/"/>
+    
+      <category term="torch" scheme="https://dust8.github.io/blog/tags/torch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OpenCV 中的绘图函数</title>
+    <link href="https://dust8.github.io/blog/2022/05/25/opencv-draw/"/>
+    <id>https://dust8.github.io/blog/2022/05/25/opencv-draw/</id>
+    <published>2022-05-25T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;画线&quot;&gt;&lt;a href=&quot;#画线&quot; class=&quot;headerlink&quot; title=&quot;画线&quot;&gt;&lt;/a&gt;画线&lt;/h2&gt;&lt;p&gt;&lt;a
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="OpenCV" scheme="https://dust8.github.io/blog/tags/OpenCV/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>jwt token 自动刷新</title>
+    <link href="https://dust8.github.io/blog/2022/04/02/jwt-token/"/>
+    <id>https://dust8.github.io/blog/2022/04/02/jwt-token/</id>
+    <published>2022-04-02T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;jwt 可以有 2 类 token, 一类叫&lt;code&gt;ACCESS_TOKEN&lt;/code&gt;用来请求接口, 一类叫&lt;code&gt;REFRESH_TOKEN&lt;/code&gt;用来刷新&lt;code&gt;ACCESS_TOKEN&lt;/code&gt;.
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="jwt" scheme="https://dust8.github.io/blog/tags/jwt/"/>
+    
+      <category term="token" scheme="https://dust8.github.io/blog/tags/token/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>django admin 一键复制</title>
+    <link href="https://dust8.github.io/blog/2022/02/20/django-admin-one_click_copy/"/>
+    <id>https://dust8.github.io/blog/2022/02/20/django-admin-one_click_copy/</id>
+    <published>2022-02-20T06:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;后台有时会有需要复制一些内容,所以需要一键复制功能来方便复制.&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="django" scheme="https://dust8.github.io/blog/tags/django/"/>
+    
+      <category term="admin" scheme="https://dust8.github.io/blog/tags/admin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>django admin 大数据量的关联外键</title>
+    <link href="https://dust8.github.io/blog/2022/02/20/django-admin-most-foreign/"/>
+    <id>https://dust8.github.io/blog/2022/02/20/django-admin-most-foreign/</id>
+    <published>2022-02-20T05:15:31.000Z</published>
+    <updated>2023-03-23T12:45:57.122Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;方法1-ModelAdmin-raw-id-fields&quot;&gt;&lt;a href=&quot;#方法1-ModelAdmin-raw-id-fields&quot; class=&quot;headerlink&quot; title=&quot;方法1.
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="django" scheme="https://dust8.github.io/blog/tags/django/"/>
+    
+      <category term="admin" scheme="https://dust8.github.io/blog/tags/admin/"/>
+    
+  </entry>
+  
+</feed>

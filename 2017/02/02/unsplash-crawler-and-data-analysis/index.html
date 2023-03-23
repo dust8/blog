@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="说明unsplash 网站比较慢, 只爬数据就用了30分钟, 爬了945页,每页有24条数据. 尝试下载图片,更加慢, 平均每张图片大约10M, 如果要下载完全部图片大约要 9452410/1024 = 222G, 还是算了吧. 爬虫代码根据  aosabook/500lines 的爬虫修改而来, 尝试使用异步来写爬虫.使用chrome浏览器开发工具来分析入口,在 network 里面的 xhr">
+<meta name="keywords" content="爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="unsplash爬虫与数据分析">
+<meta property="og:url" content="https://dust8.github.io/blog/2017/02/02/unsplash-crawler-and-data-analysis/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="说明unsplash 网站比较慢, 只爬数据就用了30分钟, 爬了945页,每页有24条数据. 尝试下载图片,更加慢, 平均每张图片大约10M, 如果要下载完全部图片大约要 9452410/1024 = 222G, 还是算了吧. 爬虫代码根据  aosabook/500lines 的爬虫修改而来, 尝试使用异步来写爬虫.使用chrome浏览器开发工具来分析入口,在 network 里面的 xhr">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.118Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="unsplash爬虫与数据分析">
+<meta name="twitter:description" content="说明unsplash 网站比较慢, 只爬数据就用了30分钟, 爬了945页,每页有24条数据. 尝试下载图片,更加慢, 平均每张图片大约10M, 如果要下载完全部图片大约要 9452410/1024 = 222G, 还是算了吧. 爬虫代码根据  aosabook/500lines 的爬虫修改而来, 尝试使用异步来写爬虫.使用chrome浏览器开发工具来分析入口,在 network 里面的 xhr">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2017/02/02/unsplash-crawler-and-data-analysis/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>unsplash爬虫与数据分析 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2017/02/02/unsplash-crawler-and-data-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          unsplash爬虫与数据分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-02-02 05:15:31" itemprop="dateCreated datePublished" datetime="2017-02-02T05:15:31+00:00">2017-02-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p><em>unsplash</em> 网站比较慢, 只爬数据就用了30分钟, 爬了945页,每页有24条数据. 尝试下载图片,更加慢, 平均每张图片大约10M, 如果要下载完全部图片大约要 <em>945</em>24<em>10/1024 = 222G</em>, 还是算了吧.</p>
+<h2 id="爬虫代码"><a href="#爬虫代码" class="headerlink" title="爬虫代码"></a>爬虫代码</h2><p>根据  <a href="https://github.com/aosabook/500lines/tree/master/crawler" target="_blank" rel="noopener">aosabook/500lines</a> 的爬虫修改而来, 尝试使用异步来写爬虫.<br>使用chrome浏览器开发工具来分析入口,在 network 里面的 xhr 就可以看到了, 还可以看到请求的头部,因为该网站需要 <em>authorization</em> 才可以爬取.</p>
+<p>crawl.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> crawling</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    crawler = crawling.Crawler()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        loop.run_until_complete(crawler.crawl())</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        print(<span class="string">'\nInterrupted\n'</span>)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        crawler.report()</span><br><span class="line">        crawler.close()</span><br><span class="line"></span><br><span class="line">        loop.stop()</span><br><span class="line">        loop.run_forever()</span><br><span class="line">        loop.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">        main()</span><br></pre></td></tr></table></figure></p>
+<p>crawling.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> aiohttp</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> urllib.parse</span><br><span class="line"><span class="keyword">from</span> db <span class="keyword">import</span> insert_many</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_redirect</span><span class="params">(response)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> response.status <span class="keyword">in</span> (<span class="number">300</span>, <span class="number">301</span>, <span class="number">301</span>, <span class="number">303</span>, <span class="number">307</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Crawler</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,</span></span></span><br><span class="line"><span class="function"><span class="params">                 max_redirect=<span class="number">10</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                 max_tries=<span class="number">4</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                 max_tasks=<span class="number">10</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                 *,</span></span></span><br><span class="line"><span class="function"><span class="params">                 loop=None)</span>:</span></span><br><span class="line">        self.max_redirect = max_redirect</span><br><span class="line">        self.max_tries = max_tries</span><br><span class="line">        self.max_tasks = max_tasks</span><br><span class="line">        self.loop = loop <span class="keyword">or</span> asyncio.get_event_loop()</span><br><span class="line"></span><br><span class="line">        self.q = asyncio.Queue(loop=self.loop)</span><br><span class="line">        self.seen_urls = set()</span><br><span class="line">        self.session = aiohttp.ClientSession(loop=self.loop)</span><br><span class="line">        self.headers = &#123;</span><br><span class="line">            <span class="string">'authorization'</span>:</span><br><span class="line">            <span class="string">'Client-ID d69927c7ea5c770fa2ce9a2f1e3589bd896454f7068f689d8e41a25b54fa6042'</span></span><br><span class="line">        &#125;</span><br><span class="line">        self.base_url = <span class="string">'https://unsplash.com/napi/photos?per_page=24&amp;order_by=latest&amp;page=%s'</span></span><br><span class="line">        self.page = <span class="number">1</span></span><br><span class="line">        self.add_url(self.base_url % (<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">        self.t0 = <span class="literal">None</span></span><br><span class="line">        self.t1 = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_url</span><span class="params">(self, url, max_redirect=None)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> max_redirect <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            max_redirect = self.max_redirect</span><br><span class="line">        self.seen_urls.add(url)</span><br><span class="line">        self.q.put_nowait((url, max_redirect))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">crawl</span><span class="params">(self)</span>:</span></span><br><span class="line">        workers = [</span><br><span class="line">            asyncio.Task(self.work(), loop=self.loop)</span><br><span class="line">            <span class="keyword">for</span> _ <span class="keyword">in</span> range(self.max_tasks)</span><br><span class="line">        ]</span><br><span class="line">        self.t0 = time.time()</span><br><span class="line">        <span class="keyword">await</span> self.q.join()</span><br><span class="line">        self.t1 = time.time()</span><br><span class="line">        <span class="keyword">for</span> w <span class="keyword">in</span> workers:</span><br><span class="line">            w.cancel()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">report</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'total time: '</span>, self.t1 - self.t0)</span><br><span class="line">        print(<span class="string">'total page:'</span>, self.page)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">work</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                url, max_redirect = <span class="keyword">await</span> self.q.get()</span><br><span class="line">                <span class="keyword">await</span> self.fetch(url, max_redirect)</span><br><span class="line">                self.q.task_done()</span><br><span class="line">        <span class="keyword">except</span> asyncio.CancelledError:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">fetch</span><span class="params">(self, url, max_redirect)</span>:</span></span><br><span class="line">        tries = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> tries &lt; self.max_tries:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                response = <span class="keyword">await</span> self.session.get(</span><br><span class="line">                    url, headers=self.headers, allow_redirects=<span class="literal">False</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">except</span> aiohttp.ClientError:</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            tries += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># all tries failed.</span></span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">if</span> is_redirect(response):</span><br><span class="line">                location = response.headers[<span class="string">'location'</span>]</span><br><span class="line">                next_url = urllib.parse.urljoin(url, location)</span><br><span class="line">                <span class="keyword">if</span> next_url <span class="keyword">in</span> self.seen_urls:</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                <span class="keyword">if</span> max_redirect &gt; <span class="number">0</span>:</span><br><span class="line">                    self.add_url(next_url, max_redirect - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                links = <span class="keyword">await</span> self.parse_links(response)</span><br><span class="line">                <span class="keyword">for</span> link <span class="keyword">in</span> links.difference(self.seen_urls):</span><br><span class="line">                    self.q.put_nowait((link, self.max_redirect))</span><br><span class="line">                self.seen_urls.update(links)</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            <span class="keyword">await</span> response.release()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">parse_links</span><span class="params">(self, response)</span>:</span></span><br><span class="line">        links = set()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> response.status == <span class="number">200</span>:</span><br><span class="line">            data = <span class="keyword">await</span> response.json()</span><br><span class="line">            <span class="keyword">if</span> data:</span><br><span class="line">                insert_many(data)</span><br><span class="line">                self.page += <span class="number">1</span></span><br><span class="line">                print(<span class="string">'next'</span>, self.base_url % (self.page))</span><br><span class="line">                links.add(self.base_url % (self.page))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> links</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">close</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.session.close()</span><br></pre></td></tr></table></figure></p>
+<p>请求回来的数据比较乱，还是用 mongdb 存储比较方便<br>db.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pymongo</span><br><span class="line"></span><br><span class="line">client = pymongo.MongoClient()</span><br><span class="line">db = client.unsplash</span><br><span class="line">photo = db.photo</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert_many</span><span class="params">(photos)</span>:</span></span><br><span class="line">    photo.insert_many(photos)</span><br></pre></td></tr></table></figure></p>
+<h2 id="数据分析"><a href="#数据分析" class="headerlink" title="数据分析"></a>数据分析</h2><h3 id="提取数据"><a href="#提取数据" class="headerlink" title="提取数据"></a>提取数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pymongo</span><br><span class="line"></span><br><span class="line">client = pymongo.MongoClient()</span><br><span class="line">db = client.unsplash</span><br><span class="line">photo = db.photo</span><br><span class="line">photos = []</span><br><span class="line"><span class="keyword">for</span> p <span class="keyword">in</span> photo.find():</span><br><span class="line">    photos.append(p)</span><br></pre></td></tr></table></figure>
+<h3 id="数据总量"><a href="#数据总量" class="headerlink" title="数据总量"></a>数据总量</h3><pre><code>len(photos)  
+
+22648
+</code></pre><h3 id="定义常用函数"><a href="#定义常用函数" class="headerlink" title="定义常用函数"></a>定义常用函数</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> defaultdict</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_counts</span><span class="params">(sequence)</span>:</span></span><br><span class="line">    counts = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> sequence:</span><br><span class="line">        counts[x] += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> counts</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">top_counts</span><span class="params">(count_dict, n=<span class="number">10</span>)</span>:</span></span><br><span class="line">    value_key_pairs = [(count, key) <span class="keyword">for</span> key, count <span class="keyword">in</span> count_dict.items()]</span><br><span class="line">    value_key_pairs.sort()</span><br><span class="line">    value_key_pairs_n = value_key_pairs[-n:]</span><br><span class="line">    value_key_pairs_n.sort(reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> value_key_pairs_n</span><br></pre></td></tr></table></figure>
+<h3 id="top10-图片大小"><a href="#top10-图片大小" class="headerlink" title="top10 图片大小"></a>top10 图片大小</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">width_heights = [str(p[<span class="string">'width'</span>])+<span class="string">'_'</span>+str(p[<span class="string">'height'</span>]) <span class="keyword">for</span> p <span class="keyword">in</span> photos]</span><br><span class="line">width_heights_counts = get_counts(width_heights)</span><br><span class="line">print(len(width_heights_counts))</span><br><span class="line">top_counts(width_heights_counts)</span><br><span class="line">```    </span><br><span class="line"></span><br><span class="line">    <span class="number">7891</span></span><br><span class="line">    [(<span class="number">1751</span>, <span class="string">'5184_3456'</span>),</span><br><span class="line">     (<span class="number">1132</span>, <span class="string">'6000_4000'</span>),</span><br><span class="line">     (<span class="number">999</span>, <span class="string">'5472_3648'</span>),</span><br><span class="line">     (<span class="number">575</span>, <span class="string">'5760_3840'</span>),</span><br><span class="line">     (<span class="number">462</span>, <span class="string">'6016_4016'</span>),</span><br><span class="line">     (<span class="number">427</span>, <span class="string">'5616_3744'</span>),</span><br><span class="line">     (<span class="number">404</span>, <span class="string">'4896_3264'</span>),</span><br><span class="line">     (<span class="number">392</span>, <span class="string">'4928_3264'</span>),</span><br><span class="line">     (<span class="number">321</span>, <span class="string">'3264_2448'</span>),</span><br><span class="line">     (<span class="number">316</span>, <span class="string">'4288_2848'</span>)]</span><br><span class="line"></span><br><span class="line"><span class="comment">### top10 颜色</span></span><br><span class="line">```python</span><br><span class="line">colors = [p[<span class="string">'color'</span>] <span class="keyword">for</span> p <span class="keyword">in</span> photos <span class="keyword">if</span> <span class="string">'color'</span> <span class="keyword">in</span> p <span class="keyword">and</span> p[<span class="string">'color'</span>] <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>]</span><br><span class="line">colors_counts = get_counts(colors)</span><br><span class="line">print(len(colors_counts))</span><br><span class="line">top_counts(colors_counts)</span><br><span class="line">```    </span><br><span class="line"></span><br><span class="line">    <span class="number">19434</span></span><br><span class="line">    [(<span class="number">119</span>, <span class="string">'#FFFFFF'</span>),</span><br><span class="line">     (<span class="number">73</span>, <span class="string">'#FEFEFE'</span>),</span><br><span class="line">     (<span class="number">45</span>, <span class="string">'#010101'</span>),</span><br><span class="line">     (<span class="number">42</span>, <span class="string">'#FCFCFC'</span>),</span><br><span class="line">     (<span class="number">41</span>, <span class="string">'#FDFDFD'</span>),</span><br><span class="line">     (<span class="number">41</span>, <span class="string">'#FBFBFB'</span>),</span><br><span class="line">     (<span class="number">29</span>, <span class="string">'#020202'</span>),</span><br><span class="line">     (<span class="number">28</span>, <span class="string">'#F9F9F9'</span>),</span><br><span class="line">     (<span class="number">24</span>, <span class="string">'#FAFAFA'</span>),</span><br><span class="line">     (<span class="number">22</span>, <span class="string">'#FEFEFD'</span>)]</span><br><span class="line"></span><br><span class="line"><span class="comment">### top10 每年照片总数</span></span><br><span class="line">```python</span><br><span class="line">created_ats = [ p[<span class="string">'created_at'</span>][:<span class="number">4</span>] <span class="keyword">for</span> p <span class="keyword">in</span> photos]</span><br><span class="line">created_ats_counts = get_counts(created_ats)</span><br><span class="line">top_counts(created_ats_counts)</span><br></pre></td></tr></table></figure>
+<pre><code>[(12761, &apos;2016&apos;),
+ (5467, &apos;2015&apos;),
+ (2702, &apos;2017&apos;),
+ (1498, &apos;2014&apos;),
+ (220, &apos;2013&apos;)]
+</code></pre>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/爬虫/" rel="tag"># 爬虫</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2017/01/19/slots/" rel="prev" title="python __slots__">
+      <i class="fa fa-chevron-left"></i> python __slots__
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2017/02/09/html-and-css-note/" rel="next" title="《HTML & CSS Design and Build Websites》读后感">
+      《HTML & CSS Design and Build Websites》读后感 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爬虫代码"><span class="nav-number">2.</span> <span class="nav-text">爬虫代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据分析"><span class="nav-number">3.</span> <span class="nav-text">数据分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#提取数据"><span class="nav-number">3.1.</span> <span class="nav-text">提取数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据总量"><span class="nav-number">3.2.</span> <span class="nav-text">数据总量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义常用函数"><span class="nav-number">3.3.</span> <span class="nav-text">定义常用函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#top10-图片大小"><span class="nav-number">3.4.</span> <span class="nav-text">top10 图片大小</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

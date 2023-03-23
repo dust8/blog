@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="怎么调试 xpath 的不喜欢用正则，感觉用有时用 xpath 简单很多。 用到的一些 xpath 表达式 ‘a/text()’ 获取 a 元素的内容 ‘//tag[@attr0][@attr1]’  语法选取节点 ‘//a/@href’ 获取所有 a 元素的 href 属性值 ‘//a/..’ 所有 a 元素的父元素  谓语 ‘//tr/td[1]’ 获取所有 tr 里面的第一个 td 元素，索">
+<meta name="keywords" content="xpath">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xpath总结">
+<meta property="og:url" content="https://dust8.github.io/blog/2017/10/02/xpath-summary/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="怎么调试 xpath 的不喜欢用正则，感觉用有时用 xpath 简单很多。 用到的一些 xpath 表达式 ‘a/text()’ 获取 a 元素的内容 ‘//tag[@attr0][@attr1]’  语法选取节点 ‘//a/@href’ 获取所有 a 元素的 href 属性值 ‘//a/..’ 所有 a 元素的父元素  谓语 ‘//tr/td[1]’ 获取所有 tr 里面的第一个 td 元素，索">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://dust8.github.io/assert/2017-10-02.png">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xpath总结">
+<meta name="twitter:description" content="怎么调试 xpath 的不喜欢用正则，感觉用有时用 xpath 简单很多。 用到的一些 xpath 表达式 ‘a/text()’ 获取 a 元素的内容 ‘//tag[@attr0][@attr1]’  语法选取节点 ‘//a/@href’ 获取所有 a 元素的 href 属性值 ‘//a/..’ 所有 a 元素的父元素  谓语 ‘//tr/td[1]’ 获取所有 tr 里面的第一个 td 元素，索">
+<meta name="twitter:image" content="https://dust8.github.io/assert/2017-10-02.png">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2017/10/02/xpath-summary/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>xpath总结 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2017/10/02/xpath-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          xpath总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-02 05:15:31" itemprop="dateCreated datePublished" datetime="2017-10-02T05:15:31+00:00">2017-10-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="怎么调试-xpath-的"><a href="#怎么调试-xpath-的" class="headerlink" title="怎么调试 xpath 的"></a>怎么调试 xpath 的</h1><p>不喜欢用正则，感觉用有时用 xpath 简单很多。<br><img src="/assert/2017-10-02.png" alt></p>
+<h1 id="用到的一些-xpath-表达式"><a href="#用到的一些-xpath-表达式" class="headerlink" title="用到的一些 xpath 表达式"></a>用到的一些 xpath 表达式</h1><ul>
+<li>‘a/text()’ 获取 a 元素的内容</li>
+<li>‘//tag[@attr0][@attr1]’</li>
+</ul>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><h3 id="选取节点"><a href="#选取节点" class="headerlink" title="选取节点"></a>选取节点</h3><ul>
+<li>‘//a/@href’ 获取所有 a 元素的 href 属性值</li>
+<li>‘//a/..’ 所有 a 元素的父元素</li>
+</ul>
+<h3 id="谓语"><a href="#谓语" class="headerlink" title="谓语"></a>谓语</h3><ul>
+<li>‘//tr/td[1]’ 获取所有 tr 里面的第一个 td 元素，索引从 1 开始</li>
+<li>‘//li[@class=”p2”]’ 选择所有类名为 p2 的 li 元素</li>
+<li>‘//tr[td[@style]]’ 包含有 style 属性的 td 元素的所有 tr 元素</li>
+<li>‘li[a]’ li 元素下有 a 元素的 li 元素</li>
+</ul>
+<h3 id="选取若干路径"><a href="#选取若干路径" class="headerlink" title="选取若干路径"></a>选取若干路径</h3><ul>
+<li>‘a|h2’ a 元素或者 h2 元素</li>
+</ul>
+<h3 id="轴"><a href="#轴" class="headerlink" title="轴"></a>轴</h3><ul>
+<li>‘//a/following-sibling::div[1]’ a 元素的第一个 div 兄弟元素</li>
+<li>‘//br/preceding-sibling::text()’ br 元素之前的所有同级的 text 节点.有些页面全是 br 元素换行,用它就可以取到和它同级的内容</li>
+<li>‘//a/ancestor::div[1]’ a 元素的第一个 div 父元素</li>
+</ul>
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><ul>
+<li>‘li[position() mod 2 = 0]’ 所有偶数位的 li 元素</li>
+<li>‘li[position() mod 2 = 1]’ 所有基数位的 li 元素</li>
+<li>‘//tr[len(td)&gt;1]’ 获取有 1 个以上 td 元素的所有 tr 元素</li>
+<li>‘li[a or h2]’ li 元素下有 a 元素或者 h2 元素的 li 元素</li>
+<li>‘a[text()=”下一页”]’ text 为下一页的 a 元素</li>
+</ul>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><h4 id="有关字符串的函数"><a href="#有关字符串的函数" class="headerlink" title="有关字符串的函数"></a>有关字符串的函数</h4><ul>
+<li>‘string(.)’ 获取当前元素下面所有的内容</li>
+<li>‘string(//a)’ 获取 a 元素的所有文本(只能获取第一个元素的所有文本)</li>
+<li>‘//tr[contains(@class,”tr”)]’ 选择所有类名包含 tr 的 tr 元素</li>
+<li>‘//div[@id=”pagination”]/span[contains(text(),”共”)]’ 获取包含 ‘共’ 的 span 元素(用 starts-with 更好).我用来获取总页数(共 666 页)</li>
+<li>‘//span[starts-with(@class,”title”)]’ css 类名以 title 开头的 span 元素</li>
+<li>‘//p[starts-with(a,”亲”)]’ 包含以 ‘亲’ 开头的 a 元素的所有 p 元素</li>
+<li>‘//span[ends-with(@class,”title”)]’ css 类名以 title 结尾的 span 元素</li>
+<li>‘substring(//span[@class=”bugs-time”]/text(),6)’</li>
+<li>‘normalize-space(//td[starts-with(text(),”手”)]/following-sibling::td[1])’</li>
+<li>‘//div[normalize-space(string(.))=”工作经历”]’</li>
+</ul>
+<h4 id="关于布尔值的函数"><a href="#关于布尔值的函数" class="headerlink" title="关于布尔值的函数"></a>关于布尔值的函数</h4><ul>
+<li>‘//ul[not(@class)]’ 选择所有没有类属性的 ul 元素</li>
+</ul>
+<h4 id="合计函数"><a href="#合计函数" class="headerlink" title="合计函数"></a>合计函数</h4><ul>
+<li>‘count(//a)’ 计算 a 元素的数量.可以用来统计一页有多少条数据</li>
+<li>‘//tr[count(td)=4]’ 只有只有 4ge 个 td 元素的 tr 元素</li>
+</ul>
+<h4 id="上下文函数"><a href="#上下文函数" class="headerlink" title="上下文函数"></a>上下文函数</h4><ul>
+<li>‘//tr[position() &gt; 1]’ 获取除了第一个 tr 元素之外的所有 tr 元素.有时第一个 tr 元素是抬头标签,不是数据</li>
+<li>‘//a[last()]’ 最后一个 a 元素.可以用来获取分页里面的最后一页,或者下一页</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/xpath/" rel="tag"># xpath</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2017/04/22/python-broken-image/" rel="prev" title="用python判断图片是否损坏">
+      <i class="fa fa-chevron-left"></i> 用python判断图片是否损坏
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2017/12/04/header-parsing-error/" rel="next" title="requests 解析头部出错">
+      requests 解析头部出错 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#怎么调试-xpath-的"><span class="nav-number">1.</span> <span class="nav-text">怎么调试 xpath 的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用到的一些-xpath-表达式"><span class="nav-number">2.</span> <span class="nav-text">用到的一些 xpath 表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">2.1.</span> <span class="nav-text">语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选取节点"><span class="nav-number">2.1.1.</span> <span class="nav-text">选取节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谓语"><span class="nav-number">2.1.2.</span> <span class="nav-text">谓语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选取若干路径"><span class="nav-number">2.1.3.</span> <span class="nav-text">选取若干路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#轴"><span class="nav-number">2.1.4.</span> <span class="nav-text">轴</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运算符"><span class="nav-number">2.1.5.</span> <span class="nav-text">运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数"><span class="nav-number">2.1.6.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有关字符串的函数"><span class="nav-number">2.1.6.1.</span> <span class="nav-text">有关字符串的函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于布尔值的函数"><span class="nav-number">2.1.6.2.</span> <span class="nav-text">关于布尔值的函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#合计函数"><span class="nav-number">2.1.6.3.</span> <span class="nav-text">合计函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#上下文函数"><span class="nav-number">2.1.6.4.</span> <span class="nav-text">上下文函数</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

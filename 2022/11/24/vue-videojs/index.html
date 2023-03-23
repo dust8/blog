@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="起因同时在vue3中播放多个视频, 还能翻页. 问题问题1.多个播放器解决: 按照videojs官方文档的vue集成教程熟悉下, 在封装成组件, 一个组件有一个播放器, 循环就支持多个. 通过ref来自动生成id.12345678910111213141516171819202122232425262728293031&amp;lt;template&amp;gt;  &amp;lt;div&amp;gt;    &amp;lt;a h">
+<meta name="keywords" content="vue,videojs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue之videojs">
+<meta property="og:url" content="https://dust8.github.io/blog/2022/11/24/vue-videojs/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="起因同时在vue3中播放多个视频, 还能翻页. 问题问题1.多个播放器解决: 按照videojs官方文档的vue集成教程熟悉下, 在封装成组件, 一个组件有一个播放器, 循环就支持多个. 通过ref来自动生成id.12345678910111213141516171819202122232425262728293031&amp;lt;template&amp;gt;  &amp;lt;div&amp;gt;    &amp;lt;a h">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue之videojs">
+<meta name="twitter:description" content="起因同时在vue3中播放多个视频, 还能翻页. 问题问题1.多个播放器解决: 按照videojs官方文档的vue集成教程熟悉下, 在封装成组件, 一个组件有一个播放器, 循环就支持多个. 通过ref来自动生成id.12345678910111213141516171819202122232425262728293031&amp;lt;template&amp;gt;  &amp;lt;div&amp;gt;    &amp;lt;a h">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2022/11/24/vue-videojs/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>vue之videojs | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2022/11/24/vue-videojs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vue之videojs
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-24 06:15:31" itemprop="dateCreated datePublished" datetime="2022-11-24T06:15:31+00:00">2022-11-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>同时在<code>vue3</code>中播放多个视频, 还能翻页.</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="问题1-多个播放器"><a href="#问题1-多个播放器" class="headerlink" title="问题1.多个播放器"></a>问题1.多个播放器</h3><p>解决: 按照<code>videojs</code>官方文档的<code>vue</code>集成教程熟悉下, 在封装成组件, 一个组件有一个播放器, 循环就支持多个. 通过<code>ref</code>来自动生成<code>id</code>.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;a href=<span class="string">"#"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"group"</span> v-<span class="keyword">for</span>=<span class="string">"item in items"</span>&gt;</span><br><span class="line">        &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"aspect-w-1 aspect-h-1 w-full overflow-hidden"</span>&gt;</span><br><span class="line">          &lt;video-player :options=<span class="string">"item.videoOptions"</span> /&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        &lt;h3 class="mt-1 text-lg font-medium text-gray-900"&gt;&#123;&#123; item.name &#125;&#125;&lt;/</span>h3&gt;</span><br><span class="line">    &lt;<span class="regexp">/a&gt;</span></span><br><span class="line"><span class="regexp">  &lt;/</span>div&gt;</span><br><span class="line">&lt;<span class="regexp">/template&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;script setup&gt;</span></span><br><span class="line"><span class="regexp">import &#123; ref &#125; from "vue";</span></span><br><span class="line"><span class="regexp">import VideoPlayer from '@/</span>components/video-player.vue<span class="string">'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">const items = [</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">        name:"湖南卫视",</span></span><br><span class="line"><span class="string">        videoOptions: &#123;</span></span><br><span class="line"><span class="string">          autoplay: true,</span></span><br><span class="line"><span class="string">          muted: true,</span></span><br><span class="line"><span class="string">          controls: true,</span></span><br><span class="line"><span class="string">          sources: [</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">              src: '</span>http:<span class="comment">//219.151.31.38/liveplay-kk.rtxapp.com/live/program/live/hnwshd/4000000/mnf.m3u8',</span></span><br><span class="line">              type: <span class="string">'application/x-mpegURL'</span></span><br><span class="line">            &#125;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="问题2-翻页播放"><a href="#问题2-翻页播放" class="headerlink" title="问题2.翻页播放"></a>问题2.翻页播放</h3><p>翻页后<code>videojs</code>生成的id未变, 视频还是更改前的. vue组件传进去的参数已经发生改变, 但<code>videojs</code>实例<code>player</code>的播放地址没有改变. 看官方文档有个<code>player.src()</code>方法可以改变播放地址. 却出现一直请求<code>.m3u8</code>文件, 未请求<code>.ts</code>视频文件.</p>
+<p>解决:<br>1.在组件内通过<code>watch</code>来监听参数变化, 有变动通过<code>player.src()</code>来设置新的播放地址.<br>2.由于<code>vue3</code> 默认使用代理来声明变量, <code>player</code>的<code>src()</code>就出现了问题, 可以把<code>player</code>声明为普通变量,  可以参考<code>video.js/issues/7418</code>.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// video-player.vue</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">import</span> videojs <span class="keyword">from</span> <span class="string">'video.js'</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">"video.js/dist/video-js.css"</span>;</span><br><span class="line"><span class="keyword">import</span> zh <span class="keyword">from</span> <span class="string">"video.js/dist/lang/zh-CN.json"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; onBeforeUnmount, onMounted, watch, ref &#125; <span class="keyword">from</span> <span class="string">'vue'</span>;</span><br><span class="line"></span><br><span class="line">videojs.addLanguage(<span class="string">'zh-CN'</span>, zh);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  name: <span class="string">'LjVideoPlayer'</span>,</span><br><span class="line">  props: &#123;</span><br><span class="line">    options: &#123;</span><br><span class="line">      type: <span class="built_in">Object</span>,</span><br><span class="line">      <span class="keyword">default</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  setup(props) &#123;</span><br><span class="line">    <span class="keyword">let</span> videoPlayer = ref(<span class="literal">null</span>)</span><br><span class="line">    <span class="keyword">let</span> player =<span class="literal">null</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">const</span> onChange = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (player) &#123;</span><br><span class="line">        player.src(props.options.sources)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> dispose = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (player) &#123;</span><br><span class="line">        player.dispose()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    onMounted(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      player = videojs(videoPlayer.value, props.options, () =&gt; &#123;</span><br><span class="line">        <span class="comment">// player.log('onPlayerReady', this);</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    onBeforeUnmount(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (player) &#123;</span><br><span class="line">        player.dispose();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    watch(props, () =&gt; &#123;</span><br><span class="line">      onChange()</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; dispose, videoPlayer,&#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;template&gt;</span></span><br><span class="line"><span class="regexp">  &lt;div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;video ref="videoPlayer" class="video-js vjs-fluid vjs-fill" webkit-playsinline="true" playsinline="true"&gt;&lt;/</span>video&gt;</span><br><span class="line">  &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;style scoped&gt;</span><br><span class="line">video &#123;</span><br><span class="line">  height: <span class="number">100</span>%;</span><br><span class="line">  width: <span class="number">100</span>%;</span><br><span class="line">  min-width: <span class="number">100</span>px;</span><br><span class="line">  min-height: <span class="number">100</span>px;</span><br><span class="line">  display: block;</span><br><span class="line">&#125;</span><br><span class="line">&lt;<span class="regexp">/style&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="问题3-vue3没有-refs"><a href="#问题3-vue3没有-refs" class="headerlink" title="问题3. vue3没有$refs"></a>问题3. vue3没有$refs</h2><p><code>videojs</code>初始化需要元素, 通过<code>ref</code>来指定后, 在取值时需要声明和导出.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    setup()&#123;</span><br><span class="line">        <span class="comment">// 声明</span></span><br><span class="line">        <span class="keyword">let</span> videoPlayer = ref(<span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">let</span> player =<span class="literal">null</span></span><br><span class="line">        </span><br><span class="line">        onMounted(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          player = videojs(videoPlayer.value, props.options, () =&gt; &#123;</span><br><span class="line">            <span class="comment">// player.log('onPlayerReady', this);</span></span><br><span class="line">          &#125;);</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 导出</span></span><br><span class="line">        <span class="keyword">return</span> &#123;videoPlayer,&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;template&gt;</span></span><br><span class="line"><span class="regexp">  &lt;div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;video ref="videoPlayer"&gt;&lt;/</span>video&gt;</span><br><span class="line">  &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="问题4-中文语言"><a href="#问题4-中文语言" class="headerlink" title="问题4. 中文语言"></a>问题4. 中文语言</h2><p>官方文档只说了设置语言, 却没说如何引入中文语言包. 没有说明<code>vue</code>如何引入中文包, 在<code>https://github.com/videojs/video.js/issues/7986</code>可以知道.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 引入中文</span></span><br><span class="line"><span class="keyword">import</span> zh <span class="keyword">from</span> <span class="string">"video.js/dist/lang/zh-CN.json"</span>;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化的时候设置中文</span></span><br><span class="line">&#123;</span><br><span class="line">    autoplay: <span class="literal">true</span>,</span><br><span class="line">    muted: <span class="literal">true</span>,</span><br><span class="line">    controls: <span class="literal">true</span>,</span><br><span class="line">    language: <span class="string">'zh-CN'</span>,</span><br><span class="line">    sources: [</span><br><span class="line">      &#123;</span><br><span class="line">        src: src,</span><br><span class="line">        type: <span class="string">'application/x-mpegURL'</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="问题5-重复使用一个弹出框来播放不同视频"><a href="#问题5-重复使用一个弹出框来播放不同视频" class="headerlink" title="问题5. 重复使用一个弹出框来播放不同视频"></a>问题5. 重复使用一个弹出框来播放不同视频</h2><p>一种是弹出生成播放实例, 关闭后销毁. 一种是重新设置视频地址.<br>下面说说不销毁的, 如果不销毁, 那么需要使用暂停, 会一直请求视频地址(m3u8)来缓存. 可以设置视频地址为空字符串, 来禁止一直请求.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">player.pause()</span><br><span class="line">player.src(<span class="string">''</span>)</span><br><span class="line">player.load()</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/videojs/video.js/issues/7418" target="_blank" rel="noopener">Cant not play when use player.src to change media’s url</a></li>
+<li><a href="https://codesandbox.io/s/friendly-carson-2rmnnh?file=/src/App.vue" target="_blank" rel="noopener">friendly-carson-2rmnnh</a></li>
+<li><a href="https://github.com/videojs/video.js/issues/7986" target="_blank" rel="noopener">i failed to set language zh-CN in react project</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/vue/" rel="tag"># vue</a>
+              <a href="/blog/tags/videojs/" rel="tag"># videojs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2022/11/22/vue-composables/" rel="prev" title="vue之组合式函数">
+      <i class="fa fa-chevron-left"></i> vue之组合式函数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2022/12/20/openv-video-error/" rel="next" title="opencv之打开视频出现旋转错误">
+      opencv之打开视频出现旋转错误 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题1-多个播放器"><span class="nav-number">2.1.</span> <span class="nav-text">问题1.多个播放器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题2-翻页播放"><span class="nav-number">2.2.</span> <span class="nav-text">问题2.翻页播放</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题3-vue3没有-refs"><span class="nav-number">3.</span> <span class="nav-text">问题3. vue3没有$refs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题4-中文语言"><span class="nav-number">4.</span> <span class="nav-text">问题4. 中文语言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题5-重复使用一个弹出框来播放不同视频"><span class="nav-number">5.</span> <span class="nav-text">问题5. 重复使用一个弹出框来播放不同视频</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

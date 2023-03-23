@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在代码合作编写中, 可能编辑器不同, 个人写代码习惯不同, 会出现代码不美观, 严重的会导致合并代码困难. 所以需要把代码统一格式化. editorconfig它可以解决不同编辑器默认的格式不统一问题. 编辑器会读取该文件来设置默认文件格式.这里可以参考 django 项目里面的设置1234567891011121314151617181920212223242526272829303132333">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python项目统一格式化方案">
+<meta property="og:url" content="https://dust8.github.io/blog/2022/07/01/python-format-project/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="在代码合作编写中, 可能编辑器不同, 个人写代码习惯不同, 会出现代码不美观, 严重的会导致合并代码困难. 所以需要把代码统一格式化. editorconfig它可以解决不同编辑器默认的格式不统一问题. 编辑器会读取该文件来设置默认文件格式.这里可以参考 django 项目里面的设置1234567891011121314151617181920212223242526272829303132333">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python项目统一格式化方案">
+<meta name="twitter:description" content="在代码合作编写中, 可能编辑器不同, 个人写代码习惯不同, 会出现代码不美观, 严重的会导致合并代码困难. 所以需要把代码统一格式化. editorconfig它可以解决不同编辑器默认的格式不统一问题. 编辑器会读取该文件来设置默认文件格式.这里可以参考 django 项目里面的设置1234567891011121314151617181920212223242526272829303132333">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2022/07/01/python-format-project/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>python项目统一格式化方案 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2022/07/01/python-format-project/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python项目统一格式化方案
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-01 06:15:31" itemprop="dateCreated datePublished" datetime="2022-07-01T06:15:31+00:00">2022-07-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在代码合作编写中, 可能编辑器不同, 个人写代码习惯不同, 会出现代码不美观, 严重的会导致合并代码困难. 所以需要把代码统一格式化.</p>
+<h2 id="editorconfig"><a href="#editorconfig" class="headerlink" title="editorconfig"></a>editorconfig</h2><p>它可以解决不同编辑器默认的格式不统一问题. 编辑器会读取该文件来设置默认文件格式.<br>这里可以参考 <code>django</code> 项目里面的设置<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .editorconfig</span></span><br><span class="line"><span class="comment"># https://editorconfig.org/</span></span><br><span class="line"></span><br><span class="line"><span class="attr">root</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="section">[*]</span></span><br><span class="line"><span class="attr">indent_style</span> = space</span><br><span class="line"><span class="attr">indent_size</span> = <span class="number">4</span></span><br><span class="line"><span class="attr">insert_final_newline</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">trim_trailing_whitespace</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">end_of_line</span> = lf</span><br><span class="line"><span class="attr">charset</span> = utf-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Docstrings and comments use max_line_length = 79</span></span><br><span class="line"><span class="section">[*.py]</span></span><br><span class="line"><span class="attr">max_line_length</span> = <span class="number">88</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Use 2 spaces for the HTML files</span></span><br><span class="line"><span class="section">[*.html]</span></span><br><span class="line"><span class="attr">indent_size</span> = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The JSON files contain newlines inconsistently</span></span><br><span class="line"><span class="section">[*.json]</span></span><br><span class="line"><span class="attr">indent_size</span> = <span class="number">2</span></span><br><span class="line"><span class="attr">insert_final_newline</span> = ignore</span><br><span class="line"></span><br><span class="line"><span class="section">[**/admin/js/vendor/**]</span></span><br><span class="line"><span class="attr">indent_style</span> = ignore</span><br><span class="line"><span class="attr">indent_size</span> = ignore</span><br><span class="line"></span><br><span class="line"><span class="comment"># Minified JavaScript files shouldn't be changed</span></span><br><span class="line"><span class="section">[**.min.js]</span></span><br><span class="line"><span class="attr">indent_style</span> = ignore</span><br><span class="line"><span class="attr">insert_final_newline</span> = ignore</span><br><span class="line"></span><br><span class="line"><span class="comment"># Makefiles always use tabs for indentation</span></span><br><span class="line"><span class="section">[Makefile]</span></span><br><span class="line"><span class="attr">indent_style</span> = tab</span><br><span class="line"></span><br><span class="line"><span class="comment"># Batch files use tabs for indentation</span></span><br><span class="line"><span class="section">[*.bat]</span></span><br><span class="line"><span class="attr">indent_style</span> = tab</span><br><span class="line"></span><br><span class="line"><span class="section">[docs/**.txt]</span></span><br><span class="line"><span class="attr">max_line_length</span> = <span class="number">79</span></span><br><span class="line"></span><br><span class="line"><span class="section">[*.yml]</span></span><br><span class="line"><span class="attr">indent_size</span> = <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="black-解决代码格式化问题"><a href="#black-解决代码格式化问题" class="headerlink" title="black 解决代码格式化问题"></a>black 解决代码格式化问题</h2><p><code>django</code> 的代码现在也改用 <code>black</code> 格式化工具了.可以在 <code>django</code> 源码里面看到.<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .pre-commit-config.yaml</span></span><br><span class="line"><span class="attr">repos:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">repo:</span> <span class="string">https://github.com/psf/black</span></span><br><span class="line">    <span class="attr">rev:</span> <span class="number">22.3</span><span class="number">.0</span></span><br><span class="line">    <span class="attr">hooks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">black</span></span><br><span class="line">      <span class="attr">exclude:</span> <span class="string">\.py-tpl$</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">repo:</span> <span class="string">https://github.com/PyCQA/isort</span></span><br><span class="line">    <span class="attr">rev:</span> <span class="number">5.10</span><span class="number">.1</span></span><br><span class="line">    <span class="attr">hooks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">isort</span></span><br><span class="line">      </span><br><span class="line"><span class="comment"># setup.cfg</span></span><br><span class="line"><span class="string">[isort]</span></span><br><span class="line"><span class="string">profile</span> <span class="string">=</span> <span class="string">black</span></span><br><span class="line"><span class="string">default_section</span> <span class="string">=</span> <span class="string">THIRDPARTY</span></span><br><span class="line"><span class="string">known_first_party</span> <span class="string">=</span> <span class="string">django</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="vscode-编辑器使用-black"><a href="#vscode-编辑器使用-black" class="headerlink" title="vscode 编辑器使用 black"></a>vscode 编辑器使用 black</h3><p>在<code>vscode</code>中先打开<code>python</code>文件, 在右键单击就会出现<code>格式化文档</code>选项, 在点击<code>格式化文档</code>, 如果还没有安装格式化工具的, 就会出现选择哪个格式化工具, 这里我们选择 <code>black</code>. 安装好后在同样操作一遍, 就会自动格式化了.</p>
+<h3 id="命令行使用-black"><a href="#命令行使用-black" class="headerlink" title="命令行使用 black"></a>命令行使用 black</h3><p>因为可能文件太多,不可能一一用编辑打开来格式化.有一些命令行,非常有用.<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查格式化前后的不同</span></span><br><span class="line"><span class="keyword">black</span> . <span class="comment">--check --diff</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行格式化</span></span><br><span class="line"><span class="keyword">black</span> .</span><br></pre></td></tr></table></figure></p>
+<h2 id="isort-解决包引入格式化问题"><a href="#isort-解决包引入格式化问题" class="headerlink" title="isort 解决包引入格式化问题"></a>isort 解决包引入格式化问题</h2><p>但是默认的配置, <code>isort</code> 和 <code>black</code> 格式化 <code>import</code> 代码不一致, 导致有问题,所以需要配置 <code>isort</code> 来适应 <code>black</code>. 在前面的 <code>.editorconfig</code> 文件里面配置 <code>profile = black</code> 来统一格式.<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .editorconfig</span></span><br><span class="line">[*.py]</span><br><span class="line">max_line_length = 88</span><br><span class="line">profile = black</span><br></pre></td></tr></table></figure></p>
+<h3 id="vscode-编辑器使用-black-1"><a href="#vscode-编辑器使用-black-1" class="headerlink" title="vscode 编辑器使用 black"></a>vscode 编辑器使用 black</h3><p>在<code>vscode</code>中先打开<code>python</code>文件, 在右键单击就会出现<code>Sort Imports</code>选项, 在点击<code>Sort Imports</code>,就自动格式化了.</p>
+<h3 id="命令行使用-isort"><a href="#命令行使用-isort" class="headerlink" title="命令行使用 isort"></a>命令行使用 isort</h3><p><code>isort</code> 和<code>black</code>一样有一些命令行,非常有用.<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># isort 简单的介绍和使用</span></span><br><span class="line">isort</span><br><span class="line"></span><br><span class="line"><span class="meta"># isort 详细的使用介绍</span></span><br><span class="line">isort --help</span><br><span class="line"></span><br><span class="line"><span class="meta"># 检查当前目录,并列出有格式化前后不一致的地方</span></span><br><span class="line">isort --check --diff .</span><br><span class="line"></span><br><span class="line"><span class="meta"># 执行格式项目</span></span><br><span class="line">isort .</span><br></pre></td></tr></table></figure></p>
+<h2 id="代码提交前检查"><a href="#代码提交前检查" class="headerlink" title="代码提交前检查"></a>代码提交前检查</h2><p>在代码提交前先检查一下 <code>black</code> 和 <code>isort</code> 是否全都统一格式化了. 如果有输出需要格式化的文件, 格式化后在提交.<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">black</span> . <span class="comment">--check</span></span><br><span class="line">isort . <span class="comment">--check</span></span><br></pre></td></tr></table></figure></p>
+<p>除了手动执行检查外, 还可以使用 <code>pre-commit</code> 工具来在提交前自动检查, 避免忘记检查. 如果检查不通过, 是提交不了的.</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/django/django" target="_blank" rel="noopener">django/django</a></li>
+<li><a href="https://github.com/psf/black" target="_blank" rel="noopener">psf/black</a></li>
+<li><a href="https://pycqa.github.io/isort/index.html" target="_blank" rel="noopener">isort</a></li>
+<li><a href="https://juejin.cn/post/7026151419459665957#heading-56" target="_blank" rel="noopener">Python代码import语句整理格式化工具-isort简介及使用详解</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2022/06/23/windows-dlib-python/" rel="prev" title="windows编译dlib的python安装包">
+      <i class="fa fa-chevron-left"></i> windows编译dlib的python安装包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2022/07/02/install-python-by-shell/" rel="next" title="一键安装Python的shell脚本">
+      一键安装Python的shell脚本 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#editorconfig"><span class="nav-number">1.</span> <span class="nav-text">editorconfig</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#black-解决代码格式化问题"><span class="nav-number">2.</span> <span class="nav-text">black 解决代码格式化问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vscode-编辑器使用-black"><span class="nav-number">2.1.</span> <span class="nav-text">vscode 编辑器使用 black</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令行使用-black"><span class="nav-number">2.2.</span> <span class="nav-text">命令行使用 black</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isort-解决包引入格式化问题"><span class="nav-number">3.</span> <span class="nav-text">isort 解决包引入格式化问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vscode-编辑器使用-black-1"><span class="nav-number">3.1.</span> <span class="nav-text">vscode 编辑器使用 black</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令行使用-isort"><span class="nav-number">3.2.</span> <span class="nav-text">命令行使用 isort</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码提交前检查"><span class="nav-number">4.</span> <span class="nav-text">代码提交前检查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="摄像头通过RS485控制云台的转动. IP监控系统协议组件 控制流, 通过SIP业务控制,RTSP URL查询/返回结果 实时流, 实时视频 存储流和回放流, TRP/TS回放流, iSCSI检索/回放  管理控制协议-SIPSIP(Session Initiation Protocol, 会话初始协议) 是应用层的会话控制协议, 用于创建,修改和释放一个或多个参与者参加的会话.SIP协议采用基于">
+<meta name="keywords" content="协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="监控协议笔记">
+<meta property="og:url" content="https://dust8.github.io/blog/2023/01/20/jian-kong-xie-yi/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="摄像头通过RS485控制云台的转动. IP监控系统协议组件 控制流, 通过SIP业务控制,RTSP URL查询/返回结果 实时流, 实时视频 存储流和回放流, TRP/TS回放流, iSCSI检索/回放  管理控制协议-SIPSIP(Session Initiation Protocol, 会话初始协议) 是应用层的会话控制协议, 用于创建,修改和释放一个或多个参与者参加的会话.SIP协议采用基于">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="监控协议笔记">
+<meta name="twitter:description" content="摄像头通过RS485控制云台的转动. IP监控系统协议组件 控制流, 通过SIP业务控制,RTSP URL查询/返回结果 实时流, 实时视频 存储流和回放流, TRP/TS回放流, iSCSI检索/回放  管理控制协议-SIPSIP(Session Initiation Protocol, 会话初始协议) 是应用层的会话控制协议, 用于创建,修改和释放一个或多个参与者参加的会话.SIP协议采用基于">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2023/01/20/jian-kong-xie-yi/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>监控协议笔记 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2023/01/20/jian-kong-xie-yi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          监控协议笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-01-20 06:15:31" itemprop="dateCreated datePublished" datetime="2023-01-20T06:15:31+00:00">2023-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>摄像头通过RS485控制云台的转动.</p>
+<h2 id="IP监控系统协议组件"><a href="#IP监控系统协议组件" class="headerlink" title="IP监控系统协议组件"></a>IP监控系统协议组件</h2><ul>
+<li>控制流, 通过SIP业务控制,RTSP URL查询/返回结果</li>
+<li>实时流, 实时视频</li>
+<li>存储流和回放流, TRP/TS回放流, iSCSI检索/回放</li>
+</ul>
+<h3 id="管理控制协议-SIP"><a href="#管理控制协议-SIP" class="headerlink" title="管理控制协议-SIP"></a>管理控制协议-SIP</h3><p>SIP(Session Initiation Protocol, 会话初始协议) 是应用层的会话控制协议, 用于创建,修改和释放一个或多个参与者参加的会话.<br>SIP协议采用基于文本格式的客户/服务器模式.<br>SIP的基本功能包含:</p>
+<ul>
+<li>用户定位</li>
+<li>用户能力协商</li>
+<li>用户可用性确定</li>
+<li>会话建立</li>
+<li>会话管理</li>
+</ul>
+<p>SDP是会话描述协议, 用于为SIP, RTSP, HTTP等协议描述会话信息.</p>
+<p>SIP消息分为Request消息和Response消息两类.<br>Request消息通过Request-Line中的Method来区分消息的类别<br>Response消息通过Status-Line中的Status Code来区分消息类别</p>
+<p>常见的SIP请求消息如下:</p>
+<ul>
+<li>INVITE: 表示主叫用户发起会话请求, 邀请其他用户加入一个会话. 也可以用在呼叫建立后用户更新会话</li>
+<li>ACK: 客户端向服务器证实它已经收到了对INVITE请求的最终响应</li>
+<li>BYE: 表示终止一个已经建立的呼叫</li>
+<li>CANCEL: 表示在收到对请求的最终响应之前取消该请求, 对于已经完成的请求则无影响</li>
+<li>REGISTER:表示客户端向SIP服务器端注册列在To字段中的地址信息</li>
+<li>OPTIONS: 表示查询被叫的相关信息和功能</li>
+</ul>
+<p>常见的SIP响应消息如下:</p>
+<ul>
+<li>100试呼叫(Trying)</li>
+<li>200成功响应(OK)</li>
+<li>400错误请求(Bad Request)</li>
+<li>401未授权(Unauthorized)</li>
+<li>403禁止(Forbidden)</li>
+<li>404用户不存在(Not Found)</li>
+<li>408请求超时(Request Timeout)</li>
+</ul>
+<h2 id="管理控制协议-SNMP"><a href="#管理控制协议-SNMP" class="headerlink" title="管理控制协议-SNMP"></a>管理控制协议-SNMP</h2><p>SNMP(Simple Network Management Protocol, 简单网络管理协议) 是对网络进行管理的一个框架, 它提供一组基本的操作来监视和维护网络.<br>SNMP可以实现自动化管理并可以屏蔽不同设备的物理差异, 实现对不同厂商产品的自动化管理.<br>SNMP网络元素分为NMS和Agent两种.</p>
+<ul>
+<li>NMS(Network Management Station, 网络管理站)</li>
+<li>Agent是驻留在设备上的一个进程, 负责接收处理来自NMS的请求报文</li>
+</ul>
+<h2 id="传输协议-TS-amp-PS"><a href="#传输协议-TS-amp-PS" class="headerlink" title="传输协议-TS&amp;PS"></a>传输协议-TS&amp;PS</h2><ul>
+<li>TS流(Transport Stream): 传输流, 将具有共同时间基准或独立时间基准的一个或多个PES组合而成的单一数据流(用于数据传输)</li>
+<li>PS流(Program Stream): 节目流, 将具有共同时间基准的一个或多个PES组合而成的单一数据流(用于播放和编辑系统, 如m2p)</li>
+</ul>
+<p>TS流和PS流的区别:<br>TS流的包结构是长度固定的, PS流的包结构是可变长度的.这导致了TS流的抵抗传输误码的能力强于PS流.</p>
+<h2 id="传输协议-RTP"><a href="#传输协议-RTP" class="headerlink" title="传输协议-RTP"></a>传输协议-RTP</h2><p>RTP(Real-time Transport Protocol): 实时传输协议, 详细说明了在互联网上传递音频和视频的标准数据包格式, 是一个传输层的基于UDP的协议.<br>RTP协议提供的信息包括: 时间戳(用于同步), 序列号(用于丢包和重排序检测), 以及负载格式(用于说明数据的编码格式).<br>RTP协议被用来为音视频等实时数据提供端到端的网络传输, 传输的模型可以是单点传送和多点传送.<br>RTP协议是为支持实时业务而设计的, 保证业务的接收和发送在很短时间内完成.</p>
+<h2 id="存储回放协议-iSCSI"><a href="#存储回放协议-iSCSI" class="headerlink" title="存储回放协议-iSCSI"></a>存储回放协议-iSCSI</h2><p>iSCSI(Internet Small Computer System Interface): Internet 小型计算机系统接口, 是一种基于TCP/IP的协议, 用来建立和管理IP存储设备, 主机和客户机之间的相互连接, 并创建存储区域网络(SAN)</p>
+<h2 id="存储回放协议-RTSP"><a href="#存储回放协议-RTSP" class="headerlink" title="存储回放协议-RTSP"></a>存储回放协议-RTSP</h2><p>RTSP(RealTime Streaming Protocol)实时流传输协议, 是TCP/IP协议体系中的一个应用层协议.该协议定义了一对多应用程序如何有效的通过IP网络传送多媒体数据. RTSP在体系结构上位于RTP/RTCP之上, 它使用TCP/UDP完成数据传输.</p>
+<h2 id="互联协议-ONVIF"><a href="#互联协议-ONVIF" class="headerlink" title="互联协议-ONVIF"></a>互联协议-ONVIF</h2><p>ONVIF(Open Network Video Interface Forum), 开放型网络视频接口论坛, 描述了网络视频的模型,接口,数据类型以及数据交互模式, 目标是实现一个网络视频框架协议, 使不同厂商所生产的网络视频产品完全互通.<br>ONVIF规范的基本功能定义有:</p>
+<ul>
+<li>设备发现</li>
+<li>设备管理</li>
+<li>实时流媒体</li>
+<li>事件处理</li>
+<li>PTZ控制</li>
+<li>其他</li>
+</ul>
+<h2 id="互联协议-国标GB28181"><a href="#互联协议-国标GB28181" class="headerlink" title="互联协议-国标GB28181"></a>互联协议-国标GB28181</h2><p>是国内定的标准, 类似ONVIF. 主要针对视频监控.<br>国标主要业务包含:</p>
+<ul>
+<li>域间注册</li>
+<li>域间保活</li>
+<li>云台控制</li>
+<li>实况业务</li>
+<li>录像检索和回放</li>
+</ul>
+<h2 id="前端智能应用"><a href="#前端智能应用" class="headerlink" title="前端智能应用"></a>前端智能应用</h2><ul>
+<li>人脸抓拍, 检测并抓拍人脸图片</li>
+<li>人数统计, 客流统计, 人数统计, 人流量统计等均为人数统计功能, 统计视频中出现的人数</li>
+<li>周界防范, 穿越警戒线, 区域入侵, 进入/离开区域等</li>
+<li>跟踪球, 对运动目标自动统计</li>
+<li>违停球, 对违停车辆进行自动抓拍, 生成证据链上传中心</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/协议/" rel="tag"># 协议</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2022/12/25/webhook-note/" rel="prev" title="webhook笔记">
+      <i class="fa fa-chevron-left"></i> webhook笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2023/02/17/video-skip-frame/" rel="next" title="视频流跳帧处理">
+      视频流跳帧处理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IP监控系统协议组件"><span class="nav-number">1.</span> <span class="nav-text">IP监控系统协议组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#管理控制协议-SIP"><span class="nav-number">1.1.</span> <span class="nav-text">管理控制协议-SIP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理控制协议-SNMP"><span class="nav-number">2.</span> <span class="nav-text">管理控制协议-SNMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传输协议-TS-amp-PS"><span class="nav-number">3.</span> <span class="nav-text">传输协议-TS&amp;PS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传输协议-RTP"><span class="nav-number">4.</span> <span class="nav-text">传输协议-RTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储回放协议-iSCSI"><span class="nav-number">5.</span> <span class="nav-text">存储回放协议-iSCSI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储回放协议-RTSP"><span class="nav-number">6.</span> <span class="nav-text">存储回放协议-RTSP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#互联协议-ONVIF"><span class="nav-number">7.</span> <span class="nav-text">互联协议-ONVIF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#互联协议-国标GB28181"><span class="nav-number">8.</span> <span class="nav-text">互联协议-国标GB28181</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前端智能应用"><span class="nav-number">9.</span> <span class="nav-text">前端智能应用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

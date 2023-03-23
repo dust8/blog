@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近过了一遍《HTML &amp;amp; CSS Design and Build Websites》.这本书对初学者比较友好,图文并茂,排版美观,内容全面,是一本值得一看的书.主要是自学的,不懂的就搜索,没有完整的看过一遍,看这本书主要是看看有哪些漏下的,还有就是顺便复习一下.这里推荐一个css可视化的参考网站,里面用图文来解释css的属性,非常直观: css reference. 一些知识颜色色调差">
+<meta name="keywords" content="html,css,book">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《HTML &amp; CSS Design and Build Websites》读后感">
+<meta property="og:url" content="https://dust8.github.io/blog/2017/02/09/html-and-css-note/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="最近过了一遍《HTML &amp;amp; CSS Design and Build Websites》.这本书对初学者比较友好,图文并茂,排版美观,内容全面,是一本值得一看的书.主要是自学的,不懂的就搜索,没有完整的看过一遍,看这本书主要是看看有哪些漏下的,还有就是顺便复习一下.这里推荐一个css可视化的参考网站,里面用图文来解释css的属性,非常直观: css reference. 一些知识颜色色调差">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《HTML &amp; CSS Design and Build Websites》读后感">
+<meta name="twitter:description" content="最近过了一遍《HTML &amp;amp; CSS Design and Build Websites》.这本书对初学者比较友好,图文并茂,排版美观,内容全面,是一本值得一看的书.主要是自学的,不懂的就搜索,没有完整的看过一遍,看这本书主要是看看有哪些漏下的,还有就是顺便复习一下.这里推荐一个css可视化的参考网站,里面用图文来解释css的属性,非常直观: css reference. 一些知识颜色色调差">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2017/02/09/html-and-css-note/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《HTML & CSS Design and Build Websites》读后感 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2017/02/09/html-and-css-note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《HTML & CSS Design and Build Websites》读后感
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-02-09 05:15:31" itemprop="dateCreated datePublished" datetime="2017-02-09T05:15:31+00:00">2017-02-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近过了一遍《HTML &amp; CSS Design and Build Websites》.这本书对初学者比较友好,<br>图文并茂,排版美观,内容全面,是一本值得一看的书.主要是自学的,不懂的就搜索,没有完整的看过一遍,看这本书主要是看看有哪些漏下的,还有就是顺便复习一下.<br>这里推荐一个css可视化的参考网站,里面用图文来解释css的属性,非常直观: <a href="http://cssreference.io/" target="_blank" rel="noopener">css reference</a>.</p>
+<h2 id="一些知识"><a href="#一些知识" class="headerlink" title="一些知识"></a>一些知识</h2><h3 id="颜色"><a href="#颜色" class="headerlink" title="颜色"></a>颜色</h3><h4 id="色调"><a href="#色调" class="headerlink" title="色调"></a>色调</h4><p>差不多就是颜色.</p>
+<h4 id="色环"><a href="#色环" class="headerlink" title="色环"></a>色环</h4><p>就是把颜色环成一个圆圈,每一个角度对应一个色调.</p>
+<h4 id="饱和度"><a href="#饱和度" class="headerlink" title="饱和度"></a>饱和度</h4><p>是指一种色调中灰色的含量,用百分比来表示.100%的饱和度代表不加入灰色.同样0%的饱和度就全是灰色了.</p>
+<h4 id="亮度"><a href="#亮度" class="headerlink" title="亮度"></a>亮度</h4><p>是指色调中加入黑色的含量.亮度最大时就是该色调,亮度最小时就是黑色了.</p>
+<h4 id="明度"><a href="#明度" class="headerlink" title="明度"></a>明度</h4><p>是指色调中加入白色或者黑色的含量.明度为0%时是黑色,50%时是标准色,100%时是白色.</p>
+<h3 id="line-height"><a href="#line-height" class="headerlink" title="line-height"></a>line-height</h3><p>行间距就是2行直接的距离.在css中有一点不一样, <em>line-height</em> 指的是字体大小再加行间距. 这就是 <em>line-height</em> 和 <em>font-size</em> 的区别.推荐用 <em>1.4em</em> 到 <em>1.5em</em>,这样可以提高文本的可读性.</p>
+<h3 id="vertical-align"><a href="#vertical-align" class="headerlink" title="vertical-align"></a>vertical-align</h3><p>垂直对齐.比如说, 要实现顶部对齐就可以设置 <em>vertical-align: top</em>.</p>
+<h3 id="自定义text-inputs-的格式"><a href="#自定义text-inputs-的格式" class="headerlink" title="自定义text inputs 的格式"></a>自定义text inputs 的格式</h3><p>比如说给它前面加个图标:</p>
+<ul>
+<li>设置 <em>background-image</em>, <em>background-repeat:no-repeat</em>, <em>background-postion</em>,<br>这样图标就在 input 里面了</li>
+<li>设置 <em>padding-left</em>, 这样就可以不让图标盖住了输入的数据</li>
+</ul>
+<h3 id="960-栅格"><a href="#960-栅格" class="headerlink" title="960 栅格"></a>960 栅格</h3><p>因为以前大部分设备显示都大于 960px, 所以选960px来显示内容.在把960px<br>分成12列,每一列是 80px, 这个80px的列包含左右各有10px的间隔,设置width<br>的时候就可以把内容设置为几个列的宽度.比如说, 一列放置3个内容,那么每个内容就<br>占4个列, <em>80(一个列的宽度)</em>4-10(一个间隔的宽度)<em>2</em> 就是每个内容块的宽度,<br>所以每个内容块的宽度就是 <em>300px</em> .这样就可以使得整个页面非常整洁.</p>
+<h3 id="线框图"><a href="#线框图" class="headerlink" title="线框图"></a>线框图</h3><p>是指网站中每个页面内容的概要.显示出信息的层次结构以及需要占用的空间.在写代码前<br>画下线框图能更省时间,这样也能更好的分离任务,一次只关注一点,效率才高.</p>
+<h3 id="seo"><a href="#seo" class="headerlink" title="seo"></a>seo</h3><h3 id="站内优化"><a href="#站内优化" class="headerlink" title="站内优化"></a>站内优化</h3><ul>
+<li>页面标题, <code>&lt;title&gt;&lt;/title&gt;</code></li>
+<li>url</li>
+<li>标题, <code>&lt;h1&gt;</code> 到 <code>&lt;h6&gt;</code></li>
+<li>正文</li>
+<li>链接文本</li>
+<li>图像的alt属性</li>
+<li>页面描述</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/html/" rel="tag"># html</a>
+              <a href="/blog/tags/css/" rel="tag"># css</a>
+              <a href="/blog/tags/book/" rel="tag"># book</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2017/02/02/unsplash-crawler-and-data-analysis/" rel="prev" title="unsplash爬虫与数据分析">
+      <i class="fa fa-chevron-left"></i> unsplash爬虫与数据分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2017/02/16/speech-to-text-use-python/" rel="next" title="使用python来语音转文字">
+      使用python来语音转文字 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一些知识"><span class="nav-number">1.</span> <span class="nav-text">一些知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#颜色"><span class="nav-number">1.1.</span> <span class="nav-text">颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#色调"><span class="nav-number">1.1.1.</span> <span class="nav-text">色调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#色环"><span class="nav-number">1.1.2.</span> <span class="nav-text">色环</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#饱和度"><span class="nav-number">1.1.3.</span> <span class="nav-text">饱和度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#亮度"><span class="nav-number">1.1.4.</span> <span class="nav-text">亮度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#明度"><span class="nav-number">1.1.5.</span> <span class="nav-text">明度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#line-height"><span class="nav-number">1.2.</span> <span class="nav-text">line-height</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vertical-align"><span class="nav-number">1.3.</span> <span class="nav-text">vertical-align</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义text-inputs-的格式"><span class="nav-number">1.4.</span> <span class="nav-text">自定义text inputs 的格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#960-栅格"><span class="nav-number">1.5.</span> <span class="nav-text">960 栅格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线框图"><span class="nav-number">1.6.</span> <span class="nav-text">线框图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#seo"><span class="nav-number">1.7.</span> <span class="nav-text">seo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#站内优化"><span class="nav-number">1.8.</span> <span class="nav-text">站内优化</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

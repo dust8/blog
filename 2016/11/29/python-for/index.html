@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="起因今天看到董伟明的《python web 开发实战》里面的 善用for...else语句 才发现原来还有这种用法.我一直不知道 for 后面还有语句.他的例子是寻找符合条件的序列的索引值:     常见方法 def find(seq, target):     found = False     for i, value in enumerate(seq):         if value =">
+<meta name="keywords" content="python,for">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python for 语句的重新认识">
+<meta property="og:url" content="https://dust8.github.io/blog/2016/11/29/python-for/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="起因今天看到董伟明的《python web 开发实战》里面的 善用for...else语句 才发现原来还有这种用法.我一直不知道 for 后面还有语句.他的例子是寻找符合条件的序列的索引值:     常见方法 def find(seq, target):     found = False     for i, value in enumerate(seq):         if value =">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.118Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python for 语句的重新认识">
+<meta name="twitter:description" content="起因今天看到董伟明的《python web 开发实战》里面的 善用for...else语句 才发现原来还有这种用法.我一直不知道 for 后面还有语句.他的例子是寻找符合条件的序列的索引值:     常见方法 def find(seq, target):     found = False     for i, value in enumerate(seq):         if value =">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2016/11/29/python-for/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>python for 语句的重新认识 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2016/11/29/python-for/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python for 语句的重新认识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-11-29 05:15:31" itemprop="dateCreated datePublished" datetime="2016-11-29T05:15:31+00:00">2016-11-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>今天看到董伟明的《python web 开发实战》里面的 <code>善用for...else语句</code> 才发现原来还有这种用法.<br>我一直不知道 <code>for</code> 后面还有语句.他的例子是寻找符合条件的序列的索引值:    </p>
+<pre><code>常见方法
+def find(seq, target):
+    found = False
+    for i, value in enumerate(seq):
+        if value == target:
+            found = True
+            break
+    if not found:
+        return -1
+    return i
+
+更好的方法
+def find(seq, target):
+    for i, value in enumerate(seq):
+        if value == target:
+            break
+    else:
+        return -1
+    return i
+</code></pre><h2 id="查看官方文档"><a href="#查看官方文档" class="headerlink" title="查看官方文档"></a>查看官方文档</h2><h3 id="Tutorial-–-for-statements"><a href="#Tutorial-–-for-statements" class="headerlink" title="Tutorial – for-statements"></a>Tutorial – for-statements</h3><p><a href="https://docs.python.org/3/tutorial/controlflow.html#for-statements" target="_blank" rel="noopener">for Statements</a><br>从 <code>tutorial</code> 里面的控制语句看起,才发现用了这么久的 <code>python</code>, 才用了最简单的用法–<code>iter</code>.    </p>
+<pre><code>&gt;&gt;&gt; # Measure some strings:
+... words = [&apos;cat&apos;, &apos;window&apos;, &apos;defenestrate&apos;]
+&gt;&gt;&gt; for w in words:
+...     print(w, len(w))
+...
+cat 3
+window 6
+defenestrate 12
+</code></pre><p>这个用法就是我们最经常见到的用法了,在来看下另外一个魔法用法:    </p>
+<pre><code>&gt;&gt;&gt; for w in words[:]:  # Loop over a slice copy of the entire list.
+...     if len(w) &gt; 6:
+...         words.insert(0, w)
+...
+&gt;&gt;&gt; words
+[&apos;defenestrate&apos;, &apos;cat&apos;, &apos;window&apos;, &apos;defenestrate&apos;]
+</code></pre><p>这里利用了切片的魔法 <code>words[:]</code>,它把 <code>words</code> 复制了一下, 所以 <code>for</code> 枚举的是<code>words</code><br>的副本, 然后才可以在子句里面操作 <code>words</code>.这里又学到了一招,但是还是没有发现有<code>for...else</code><br>的用法.</p>
+<h3 id="Language-Reference-–-The-for-statement"><a href="#Language-Reference-–-The-for-statement" class="headerlink" title="Language Reference – The for statement"></a>Language Reference – The for statement</h3><p><a href="https://docs.python.org/3/reference/compound_stmts.html#the-for-statement" target="_blank" rel="noopener">The for statement</a><br>在这里我们可以看到 <code>for</code> 语句的 <code>BNF</code>:    </p>
+<pre><code>for_stmt ::=  &quot;for&quot; target_list &quot;in&quot; expression_list &quot;:&quot; suite
+          [&quot;else&quot; &quot;:&quot; suite]
+</code></pre><p><code>for</code> 语句是用来枚举序列(字符串,元组,列表)和可枚举对象的元素.当元素耗尽,如果有<code>else</code>子句,就会执行 <code>else</code> 子句里面的语句.如果在第一个 <code>suite</code> 里面执行了 <code>break</code> 语句就不会在执行 <code>else</code> 子句.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>官方文档才是最全的书.看过不少书和文章,这个 <code>for...else</code> 只见过这一次提及到.</li>
+<li>学精知识就需要追根究底.比如要学精<code>python</code>,就需要深入它的本身,而不仅仅只学它的用法.就像前面的 <code>Tutorial</code> 文档就是它的用法, 而 <code>Language Reference</code> 文档才是它的本身.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/python/" rel="tag"># python</a>
+              <a href="/blog/tags/for/" rel="tag"># for</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2016/11/23/chrome-domain/" rel="prev" title="chrome有关域名的坑">
+      <i class="fa fa-chevron-left"></i> chrome有关域名的坑
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2016/12/02/python-sys-path/" rel="next" title="python sys.path 的妙用">
+      python sys.path 的妙用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看官方文档"><span class="nav-number">2.</span> <span class="nav-text">查看官方文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Tutorial-–-for-statements"><span class="nav-number">2.1.</span> <span class="nav-text">Tutorial – for-statements</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Language-Reference-–-The-for-statement"><span class="nav-number">2.2.</span> <span class="nav-text">Language Reference – The for statement</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

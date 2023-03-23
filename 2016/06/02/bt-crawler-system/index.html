@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言好几年前就开始接触 dht 了，那时还是 小虾 引起的潮流.大概原理基本都了解了, 就是代码写的难看，执行效率也不高。这几年有很多人也接触到这些，开源了不少简洁而又高效的代码。 技术表B 编码我用的是 python3, 不是主流，所以要自己写编码和解码，有了 bencoding。 官方的库bencode, 它只支持 python2. 非官方的库bencoder.pyx, A fast benc">
+<meta name="keywords" content="dht,bt,crawler">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bt爬虫系统">
+<meta property="og:url" content="https://dust8.github.io/blog/2016/06/02/bt-crawler-system/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="前言好几年前就开始接触 dht 了，那时还是 小虾 引起的潮流.大概原理基本都了解了, 就是代码写的难看，执行效率也不高。这几年有很多人也接触到这些，开源了不少简洁而又高效的代码。 技术表B 编码我用的是 python3, 不是主流，所以要自己写编码和解码，有了 bencoding。 官方的库bencode, 它只支持 python2. 非官方的库bencoder.pyx, A fast benc">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://dust8.github.io/assert/2016-06-02-bt-crawler-system.PNG">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.118Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bt爬虫系统">
+<meta name="twitter:description" content="前言好几年前就开始接触 dht 了，那时还是 小虾 引起的潮流.大概原理基本都了解了, 就是代码写的难看，执行效率也不高。这几年有很多人也接触到这些，开源了不少简洁而又高效的代码。 技术表B 编码我用的是 python3, 不是主流，所以要自己写编码和解码，有了 bencoding。 官方的库bencode, 它只支持 python2. 非官方的库bencoder.pyx, A fast benc">
+<meta name="twitter:image" content="https://dust8.github.io/assert/2016-06-02-bt-crawler-system.PNG">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2016/06/02/bt-crawler-system/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>bt爬虫系统 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2016/06/02/bt-crawler-system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          bt爬虫系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-06-02 11:49:36" itemprop="dateCreated datePublished" datetime="2016-06-02T11:49:36+00:00">2016-06-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>好几年前就开始接触 <code>dht</code> 了，那时还是 <code>小虾</code> 引起的潮流.<br>大概原理基本都了解了, 就是代码写的难看，执行效率也不高。<br>这几年有很多人也接触到这些，开源了不少简洁而又高效的代码。</p>
+<h1 id="技术表"><a href="#技术表" class="headerlink" title="技术表"></a>技术表</h1><h2 id="B-编码"><a href="#B-编码" class="headerlink" title="B 编码"></a>B 编码</h2><p>我用的是 <code>python3</code>, 不是主流，所以要自己写编码和解码，有了 <a href="https://github.com/dust8/bencoding" target="_blank" rel="noopener">bencoding</a>。</p>
+<h3 id="官方的库"><a href="#官方的库" class="headerlink" title="官方的库"></a>官方的库</h3><p><a href="https://github.com/bittorrent/bencode" target="_blank" rel="noopener">bencode</a>, 它只支持 <code>python2</code>.</p>
+<h3 id="非官方的库"><a href="#非官方的库" class="headerlink" title="非官方的库"></a>非官方的库</h3><p><a href="https://github.com/whtsky/bencoder.pyx" target="_blank" rel="noopener">bencoder.pyx</a>, A fast bencode implementation in Cython.</p>
+<h2 id="infohash-的抓取"><a href="#infohash-的抓取" class="headerlink" title="infohash 的抓取"></a>infohash 的抓取</h2><h3 id="官方的-bootstrap-dht"><a href="#官方的-bootstrap-dht" class="headerlink" title="官方的 bootstrap-dht"></a>官方的 bootstrap-dht</h3><p><a href="https://github.com/bittorrent/bootstrap-dht" target="_blank" rel="noopener">bootstrap-dht</a>, 它简单的示例了下 <code>dht</code> 启动服务器。</p>
+<h3 id="非官方的"><a href="#非官方的" class="headerlink" title="非官方的"></a>非官方的</h3><ul>
+<li><p><a href="https://github.com/Fuck-You-GFW/simDHT" target="_blank" rel="noopener">simDHT</a>, 它是老太太的杰作, 简单又简洁。<br>它最先解决了怎么才能高效的认识其他节点，也就是改变发送的 id。id 的高位也就是最前面的影响最大，距离越远。</p>
+</li>
+<li><p><a href="https://github.com/whtsky/maga" target="_blank" rel="noopener">maga</a>, 这是最近发现的，它使用了 <code>asyncio</code>, 非常高效，代码也<br>很简洁，推荐看一下。</p>
+</li>
+</ul>
+<h2 id="种子信息的抓取"><a href="#种子信息的抓取" class="headerlink" title="种子信息的抓取"></a>种子信息的抓取</h2><h3 id="dht-网络抓取"><a href="#dht-网络抓取" class="headerlink" title="dht 网络抓取"></a>dht 网络抓取</h3><p>这种方法不会受限于人，它根据<code>bittorrent</code>协议去下载信息。优点是全，稳, 缺点就是慢.<br>如果直接根据 <code>announce_peer</code> 去下载，有很多 peer 连不上，有很多 peer 自己都还没下载完成。</p>
+<h3 id="其他提供者抓取"><a href="#其他提供者抓取" class="headerlink" title="其他提供者抓取"></a>其他提供者抓取</h3><p>这种方法就是去抓像迅雷这样的提供者.优点是快，缺点是不全，要看它们的脸色.</p>
+<h2 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h2><h3 id="ip-和端口的解析"><a href="#ip-和端口的解析" class="headerlink" title="ip 和端口的解析"></a>ip 和端口的解析</h3><p><code>ip</code> 4 个字节，怎么转成 ‘192.168.1.1’ 这样，用 <code>socket.inet_ntoa</code>,半路出家的坑啊。</p>
+<h3 id="路由表"><a href="#路由表" class="headerlink" title="路由表"></a>路由表</h3><p>写爬虫完全不需要</p>
+<h3 id="效率"><a href="#效率" class="headerlink" title="效率"></a>效率</h3><p>像 <code>maga</code> 那样，效率太高了，<code>cpu</code> 和 网络占用太多。 给它定个限制，一分钟只能发多少个包，<br>超过的直接就不发了，因为是爬虫，丢包没影响。</p>
+<h3 id="文件名解码"><a href="#文件名解码" class="headerlink" title="文件名解码"></a>文件名解码</h3><p>绝大多数可以用 <code>utf8</code> 解码，出错在用 <code>gb18030</code>, 剩下的就难搞了，只能丢掉了。</p>
+<h1 id="爬虫架构"><a href="#爬虫架构" class="headerlink" title="爬虫架构"></a>爬虫架构</h1><p><img src="/assert/2016-06-02-bt-crawler-system.PNG" alt="bt-crawler-system"></p>
+<ol>
+<li><code>infohash</code> 抓取用 <code>maga</code> 改的</li>
+<li><code>metadata</code> 抓取用 迅雷的地址</li>
+<li><code>infohash</code> 传递用 <code>rabbitmq</code> 和 <code>celery</code></li>
+<li>数据库用 <code>mongodb</code>, 全文搜索就不好搞， 可以考虑用 <code>elasticsearch</code>.</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/dht/" rel="tag"># dht</a>
+              <a href="/blog/tags/bt/" rel="tag"># bt</a>
+              <a href="/blog/tags/crawler/" rel="tag"># crawler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2016/04/03/chinese-word-segmentation/" rel="prev" title="中文分词">
+      <i class="fa fa-chevron-left"></i> 中文分词
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2016/06/17/hexo-to-docker/" rel="next" title="转移hexo到docker">
+      转移hexo到docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术表"><span class="nav-number">2.</span> <span class="nav-text">技术表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-编码"><span class="nav-number">2.1.</span> <span class="nav-text">B 编码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方的库"><span class="nav-number">2.1.1.</span> <span class="nav-text">官方的库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非官方的库"><span class="nav-number">2.1.2.</span> <span class="nav-text">非官方的库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#infohash-的抓取"><span class="nav-number">2.2.</span> <span class="nav-text">infohash 的抓取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方的-bootstrap-dht"><span class="nav-number">2.2.1.</span> <span class="nav-text">官方的 bootstrap-dht</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非官方的"><span class="nav-number">2.2.2.</span> <span class="nav-text">非官方的</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#种子信息的抓取"><span class="nav-number">2.3.</span> <span class="nav-text">种子信息的抓取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dht-网络抓取"><span class="nav-number">2.3.1.</span> <span class="nav-text">dht 网络抓取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他提供者抓取"><span class="nav-number">2.3.2.</span> <span class="nav-text">其他提供者抓取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑"><span class="nav-number">2.4.</span> <span class="nav-text">坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ip-和端口的解析"><span class="nav-number">2.4.1.</span> <span class="nav-text">ip 和端口的解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由表"><span class="nav-number">2.4.2.</span> <span class="nav-text">路由表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效率"><span class="nav-number">2.4.3.</span> <span class="nav-text">效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件名解码"><span class="nav-number">2.4.4.</span> <span class="nav-text">文件名解码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#爬虫架构"><span class="nav-number">3.</span> <span class="nav-text">爬虫架构</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="django-filter 可以用来过滤查询. 跟 Django REST framework 很配. 使用123456789# 模型from django.db import modelsclass Product(models.Model):    name = models.CharField(max_length=255)    price = models.DecimalField()">
+<meta name="keywords" content="django,django-filter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="django-filter使用">
+<meta property="og:url" content="https://dust8.github.io/blog/2021/01/12/django-filter/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="django-filter 可以用来过滤查询. 跟 Django REST framework 很配. 使用123456789# 模型from django.db import modelsclass Product(models.Model):    name = models.CharField(max_length=255)    price = models.DecimalField()">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="django-filter使用">
+<meta name="twitter:description" content="django-filter 可以用来过滤查询. 跟 Django REST framework 很配. 使用123456789# 模型from django.db import modelsclass Product(models.Model):    name = models.CharField(max_length=255)    price = models.DecimalField()">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2021/01/12/django-filter/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>django-filter使用 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2021/01/12/django-filter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          django-filter使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-12 05:15:31" itemprop="dateCreated datePublished" datetime="2021-01-12T05:15:31+00:00">2021-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://django-filter.readthedocs.io/en/stable/" target="_blank" rel="noopener">django-filter</a> 可以用来过滤查询. 跟 <a href="https://www.django-rest-framework.org/" target="_blank" rel="noopener">Django REST framework</a> 很配.</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 模型</span></span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Product</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">255</span>)</span><br><span class="line">    price = models.DecimalField()</span><br><span class="line">    description = models.TextField()</span><br><span class="line">    release_date = models.DateField()</span><br><span class="line">    manufacturer = models.ForeignKey(Manufacturer)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 过滤器</span></span><br><span class="line"><span class="keyword">import</span> django_filters</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProductFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Product</span><br><span class="line">        fields = [<span class="string">'price'</span>, <span class="string">'release_date'</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="指定字段-排除字段"><a href="#指定字段-排除字段" class="headerlink" title="指定字段, 排除字段"></a>指定字段, 排除字段</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        <span class="comment"># 指定字段</span></span><br><span class="line">        fields = [<span class="string">'username'</span>, <span class="string">'last_login'</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        <span class="comment"># 排除字段</span></span><br><span class="line">        exclude = [<span class="string">'username'</span>, <span class="string">'last_login'</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="过滤大于和小于或者包含等于"><a href="#过滤大于和小于或者包含等于" class="headerlink" title="过滤大于和小于或者包含等于"></a>过滤大于和小于或者包含等于</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProductFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    price = django_filters.NumberFilter()</span><br><span class="line">    price__gt = django_filters.NumberFilter(field_name=<span class="string">'price'</span>, lookup_expr=<span class="string">'gt'</span>)</span><br><span class="line">    price__lt = django_filters.NumberFilter(field_name=<span class="string">'price'</span>, lookup_expr=<span class="string">'lt'</span>)</span><br><span class="line">    price__lte = django_filters.NumberFilter(field_name=<span class="string">'price'</span>, lookup_expr=<span class="string">'lte'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Product</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProductFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Product</span><br><span class="line">        fields = &#123;</span><br><span class="line">            <span class="string">'price'</span>: [<span class="string">'lt'</span>, <span class="string">'gt'</span>],</span><br><span class="line">            <span class="string">'release_date'</span>: [<span class="string">'exact'</span>, <span class="string">'year__gt'</span>],</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="过滤范围"><a href="#过滤范围" class="headerlink" title="过滤范围"></a>过滤范围</h2><p>一般是名字里面包含 <code>Range</code>, 例如 <code>RangeFilter</code> , <code>NumericRangeFilter</code> ,  <code>DateRangeFilter</code> , <code>DateFromToRangeFilter</code>, 查询时 <code>url</code> 为 <code>/?date_after=2016-01-01&amp;date_before=2016-02-01</code><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Comment</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    date = models.DateField()</span><br><span class="line">    time = models.TimeField()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">F</span><span class="params">(FilterSet)</span>:</span></span><br><span class="line">    date = DateFromToRangeFilter()</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = Comment</span><br><span class="line">        fields = [<span class="string">'date'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Range: Comments added between 2016-01-01 and 2016-02-01</span></span><br><span class="line">f = F(&#123;<span class="string">'date_after'</span>: <span class="string">'2016-01-01'</span>, <span class="string">'date_before'</span>: <span class="string">'2016-02-01'</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Min-Only: Comments added after 2016-01-01</span></span><br><span class="line">f = F(&#123;<span class="string">'date_after'</span>: <span class="string">'2016-01-01'</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Max-Only: Comments added before 2016-02-01</span></span><br><span class="line">f = F(&#123;<span class="string">'date_before'</span>: <span class="string">'2016-02-01'</span>&#125;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="自定义-method"><a href="#自定义-method" class="headerlink" title="自定义 method"></a>自定义 method</h2><h3 id="自定义搜索多个字段"><a href="#自定义搜索多个字段" class="headerlink" title="自定义搜索多个字段"></a>自定义搜索多个字段</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># https://django-filter.readthedocs.io/en/stable/guide/usage.html#customize-filtering-with-filter-method</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">F</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    username = CharFilter(method=<span class="string">'my_custom_filter'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = User</span><br><span class="line">        fields = [<span class="string">'username'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">my_custom_filter</span><span class="params">(self, queryset, name, value)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> queryset.filter(**&#123;</span><br><span class="line">            name: value,</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># https://django-filter.readthedocs.io/en/stable/guide/tips.html#filtering-by-relative-times</span></span><br><span class="line"><span class="keyword">from</span> django.utils <span class="keyword">import</span> timezone</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> timedelta</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataModel</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    time_stamp = models.DateTimeField()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataFilter</span><span class="params">(django_filters.FilterSet)</span>:</span></span><br><span class="line">    hours = django_filters.NumberFilter(</span><br><span class="line">        field_name=<span class="string">'time_stamp'</span>, method=<span class="string">'get_past_n_hours'</span>, label=<span class="string">"Past n hours"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_past_n_hours</span><span class="params">(self, queryset, field_name, value)</span>:</span></span><br><span class="line">        time_threshold = timezone.now() - timedelta(hours=int(value))</span><br><span class="line">        <span class="keyword">return</span> queryset.filter(time_stamp__gte=time_threshold)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = DataModel</span><br><span class="line">        fields = (<span class="string">'hours'</span>,)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 同时搜索多个字段</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassSellInfoFilter</span><span class="params">(filters_rest.FilterSet)</span>:</span></span><br><span class="line">    fuzzy_search = filters_rest.CharFilter(method=<span class="string">'search_title_or_class_tag'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">search_title_or_class_tag</span><span class="params">(self, queryset, name, value)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> queryset.filter(Q(class_sell_title__icontains=value) | Q(class_name__class_tag__icontains=value))</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = ClassSellInfo</span><br><span class="line">        fields = [<span class="string">'fuzzy_search'</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://django-filter.readthedocs.io/en/stable/" target="_blank" rel="noopener">django-filter</a></li>
+<li><a href="https://django-filter.readthedocs.io/en/master/ref/filters.html#datefromtorangefilter" target="_blank" rel="noopener">DateFromToRangeFilter</a></li>
+<li><a href="https://www.dazhuanlan.com/2019/12/05/5de8e06c9fab8/" target="_blank" rel="noopener">Python系列之《Django-DRF-搜索》</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/django/" rel="tag"># django</a>
+              <a href="/blog/tags/django-filter/" rel="tag"># django-filter</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/12/24/django-import-export/" rel="prev" title="django-import-export使用">
+      <i class="fa fa-chevron-left"></i> django-import-export使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2021/03/25/django-upload-fields/" rel="next" title="django之DATA_UPLOAD_MAX_NUMBER_FIELDS">
+      django之DATA_UPLOAD_MAX_NUMBER_FIELDS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定字段-排除字段"><span class="nav-number">2.</span> <span class="nav-text">指定字段, 排除字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤大于和小于或者包含等于"><span class="nav-number">3.</span> <span class="nav-text">过滤大于和小于或者包含等于</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤范围"><span class="nav-number">4.</span> <span class="nav-text">过滤范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义-method"><span class="nav-number">5.</span> <span class="nav-text">自定义 method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义搜索多个字段"><span class="nav-number">5.1.</span> <span class="nav-text">自定义搜索多个字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

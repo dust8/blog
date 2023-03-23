@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近开发浏览器扩展碰到的问题记录下, 会不断更新. 详细的开发资料可以看下面的参考链接, 里面已经总结的很好了, 这里只记录下在实践开发中遇到的问题和解决办法. 建了个 QQ 群: 742072171 , 提供一个互相交流学习的地方. Content Scriptsjsonp 请求回调未定义出现这个问题是浏览器扩展安全限制, 目标页面和content-script不能共享 js, 所以我们只需要将">
+<meta name="keywords" content="chrome,扩展">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome 扩展开发问题">
+<meta property="og:url" content="https://dust8.github.io/blog/2020/02/17/chrome-extions-record/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="最近开发浏览器扩展碰到的问题记录下, 会不断更新. 详细的开发资料可以看下面的参考链接, 里面已经总结的很好了, 这里只记录下在实践开发中遇到的问题和解决办法. 建了个 QQ 群: 742072171 , 提供一个互相交流学习的地方. Content Scriptsjsonp 请求回调未定义出现这个问题是浏览器扩展安全限制, 目标页面和content-script不能共享 js, 所以我们只需要将">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-02-28T06:15:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="chrome 扩展开发问题">
+<meta name="twitter:description" content="最近开发浏览器扩展碰到的问题记录下, 会不断更新. 详细的开发资料可以看下面的参考链接, 里面已经总结的很好了, 这里只记录下在实践开发中遇到的问题和解决办法. 建了个 QQ 群: 742072171 , 提供一个互相交流学习的地方. Content Scriptsjsonp 请求回调未定义出现这个问题是浏览器扩展安全限制, 目标页面和content-script不能共享 js, 所以我们只需要将">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2020/02/17/chrome-extions-record/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>chrome 扩展开发问题 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2020/02/17/chrome-extions-record/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          chrome 扩展开发问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-17 06:15:31" itemprop="dateCreated datePublished" datetime="2020-02-17T06:15:31+00:00">2020-02-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-28 06:15:31" itemprop="dateModified" datetime="2020-02-28T06:15:31+00:00">2020-02-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近开发浏览器扩展碰到的问题记录下, 会不断更新. 详细的开发资料可以看下面的参考链接, 里面已经总结的很好了, 这里只记录下在实践开发中遇到的问题和解决办法.</p>
+<p>建了个 QQ 群: 742072171 , 提供一个互相交流学习的地方.</p>
+<h2 id="Content-Scripts"><a href="#Content-Scripts" class="headerlink" title="Content Scripts"></a>Content Scripts</h2><h3 id="jsonp-请求回调未定义"><a href="#jsonp-请求回调未定义" class="headerlink" title="jsonp 请求回调未定义"></a>jsonp 请求回调未定义</h3><p>出现这个问题是浏览器扩展安全限制, 目标页面和<code>content-script</code>不能共享 js, 所以我们只需要将回调函数注入到目标页面就可以了. 原理是 <code>content-script</code> 能操作目标页面的 <code>DOM</code>, 我们就可以通过 <code>js</code> 动态的插入 <code>script</code> 链接资源.</p>
+<p><a href="http://open.chrome.360.cn/extension_dev/manifest.html#web_accessible_resources" target="_blank" rel="noopener">web_accessible_resources 介绍</a>.</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># manifest.json</span></span><br><span class="line"></span><br><span class="line"><span class="string">"web_accessible_resources"</span>: [<span class="string">"js/inject.js"</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// content.js</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 向页面注入JS文件</span></span><br><span class="line"><span class="comment">// &lt;script src="js/inject.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">injectCustomJs</span>(<span class="params">jsPath</span>) </span>&#123;</span><br><span class="line">  jsPath = jsPath || <span class="string">"js/inject.js"</span>;</span><br><span class="line">  <span class="keyword">var</span> temp = <span class="built_in">document</span>.createElement(<span class="string">"script"</span>);</span><br><span class="line">  temp.setAttribute(<span class="string">"type"</span>, <span class="string">"text/javascript"</span>);</span><br><span class="line">  <span class="comment">// 获得的地址类似：chrome-extension://ihcokhadfjfchaeagdoclpnjdiokfakg/js/inject.js</span></span><br><span class="line">  temp.src = chrome.extension.getURL(jsPath);</span><br><span class="line">  temp.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 放在页面不好看，执行完后移除掉</span></span><br><span class="line">    <span class="keyword">this</span>.parentNode.removeChild(<span class="keyword">this</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="built_in">document</span>.head.appendChild(temp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">injectCustomJs();</span><br><span class="line"></span><br><span class="line"><span class="comment">// jsonp 请求</span></span><br><span class="line">$.ajax(&#123;</span><br><span class="line">  url: <span class="string">"http://xxx.com/api"</span>,</span><br><span class="line">  type: <span class="string">"post"</span>,</span><br><span class="line">  dataType: <span class="string">"jsonp"</span>,</span><br><span class="line">  jsonpCallback: <span class="string">"cb"</span>,</span><br><span class="line">  data: &#123;</span><br><span class="line">    signType: <span class="string">"v3"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  success: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"success"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// inject.js</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 回调函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cb</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"jsonp 回调"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="content-script-css-文件引入图片资源"><a href="#content-script-css-文件引入图片资源" class="headerlink" title="content script css 文件引入图片资源"></a>content script css 文件引入图片资源</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* content.css */</span></span><br><span class="line">background-image: url("chrome-extension://__MSG_@@extension_id__/images/rotate.png");</span><br></pre></td></tr></table></figure>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># mainfest.json</span></span><br><span class="line"><span class="string">"web_accessible_resources"</span>: [<span class="string">"images/rotate.png"</span>],</span><br></pre></td></tr></table></figure>
+<h3 id="多个-content-分别在文档开始和结束注入"><a href="#多个-content-分别在文档开始和结束注入" class="headerlink" title="多个 content 分别在文档开始和结束注入"></a>多个 content 分别在文档开始和结束注入</h3><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"content_scripts"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"matches"</span>: [<span class="string">"http://www.google.com/*"</span>],</span><br><span class="line">      <span class="string">"js"</span>: [<span class="string">"start.js"</span>],</span><br><span class="line">      <span class="string">"run_at"</span>: <span class="string">"document_start"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"matches"</span>: [<span class="string">"http://www.google.com/*"</span>],</span><br><span class="line">      <span class="string">"js"</span>: [<span class="string">"end.js"</span>],</span><br><span class="line">      <span class="string">"run_at"</span>: <span class="string">"document_end"</span></span><br><span class="line">    &#125;</span><br><span class="line"> ]</span><br></pre></td></tr></table></figure>
+<h3 id="屏蔽原始网页的内容"><a href="#屏蔽原始网页的内容" class="headerlink" title="屏蔽原始网页的内容"></a>屏蔽原始网页的内容</h3><p>屏蔽原始网页的内容很常见, 如果用 <code>js</code> 来屏蔽会先出现,然后在消失. 给人感觉就不好了. 可以在 <code>css</code> 里面屏蔽, 这样就不会出现了. 当然也要设置 <code>&quot;run_at&quot;: &quot;document_start&quot;</code> .</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#userinfo</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: none <span class="meta">!important</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="存储相关"><a href="#存储相关" class="headerlink" title="存储相关"></a>存储相关</h2><h3 id="chrome-storage-获取不到数据"><a href="#chrome-storage-获取不到数据" class="headerlink" title="chrome.storage 获取不到数据"></a>chrome.storage 获取不到数据</h3><p>原因是这些接口是异步的, 它有时还没取到数据就执行后面的脚本, 导致有时获取不到数据.<br>方法一:回调函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params">key, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (key != <span class="literal">null</span>) &#123;</span><br><span class="line">    chrome.storage.local.get(key, <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">      callback(obj);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Usage</span></span><br><span class="line">read(<span class="string">"test"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// val...</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>方法二:承诺</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params">key</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (key != <span class="literal">null</span>) &#123;</span><br><span class="line">      chrome.storage.local.get(key, <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">        resolve(obj);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      reject(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. Classic usage</span></span><br><span class="line">read(<span class="string">"test"</span>)</span><br><span class="line">  .then(<span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// val...</span></span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// looks like key is null</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. Use async/await</span></span><br><span class="line"><span class="keyword">var</span> val = <span class="keyword">await</span> read(test);</span><br><span class="line"><span class="built_in">console</span>.log(val);</span><br></pre></td></tr></table></figure>
+<h2 id="chrome-tabs"><a href="#chrome-tabs" class="headerlink" title="chrome.tabs"></a>chrome.tabs</h2><h3 id="扩展里面打开新标签页"><a href="#扩展里面打开新标签页" class="headerlink" title="扩展里面打开新标签页"></a>扩展里面打开新标签页</h3><p>除了 <code>windows.open</code> 还可以用扩展的接口</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">chrome.tabs.create(</span><br><span class="line">  &#123;</span><br><span class="line">    url: <span class="string">"http://xxx.com"</span>,</span><br><span class="line">    <span class="comment">// 先不激活</span></span><br><span class="line">    active: <span class="literal">false</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="function"><span class="keyword">function</span>(<span class="params">tab</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"tab was created"</span>, tab);</span><br><span class="line">    <span class="comment">// 激活标签</span></span><br><span class="line">    chrome.tabs.update(tab.id, &#123; <span class="attr">active</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="查询和更新关闭标签页"><a href="#查询和更新关闭标签页" class="headerlink" title="查询和更新关闭标签页"></a>查询和更新关闭标签页</h3><p>因为这些接口都是异步, 如果需要先判断在执行后面的操作, 最好用承诺来处理, 下面是截取的一部分代码, 不要照搬, 领会原理就好了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">query</span>(<span class="params">urlWd</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    chrome.tabs.query(&#123; <span class="attr">url</span>: <span class="string">"https://www.baidu.com/s?wd=*"</span> &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">tabs</span>) </span>&#123;</span><br><span class="line">      resolve(tabs, urlWd);</span><br><span class="line"></span><br><span class="line">      <span class="comment">//   else &#123;</span></span><br><span class="line">      <span class="comment">//     reject(null);</span></span><br><span class="line">      <span class="comment">//   &#125;</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params">tabs, urlWd</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// chrome.tabs.update(tabs[0].id, &#123; url: urlWd, active: true &#125;, function(tab) &#123;</span></span><br><span class="line">    <span class="comment">//   resolve(tab);</span></span><br><span class="line">    <span class="comment">// &#125;);</span></span><br><span class="line">    [...tabs].forEach(<span class="function"><span class="params">tab</span> =&gt;</span> &#123;</span><br><span class="line">      chrome.tabs.remove(tab.id);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">query(urlWd)</span><br><span class="line">  .then(<span class="function"><span class="params">tabs</span> =&gt;</span> &#123;</span><br><span class="line">    update(tabs);</span><br><span class="line">  &#125;)</span><br><span class="line">  .then(<span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">    gotoBaidu(info, tab);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="chrome-cookies"><a href="#chrome-cookies" class="headerlink" title="chrome.cookies"></a>chrome.cookies</h2><h3 id="获取-cookie"><a href="#获取-cookie" class="headerlink" title="获取 cookie"></a>获取 cookie</h3><p>要获取 <code>cookie</code> 比如用 <code>chrome.cookies.getAll({})</code> 获取所有的 <code>cookies</code>, 会返回空数组, 是因为权限没有设置好. 除了要设置 <code>cookies</code> 还要在权限里面设置域名, 要在 <code>chrome://extensions/</code> 页面点击扩展的刷新按钮, 仔细检查看扩展有没有错误按钮,有的话要进去看是什么错误, 这也是一种很好检查错误的方式.</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"permissions"</span>: [</span><br><span class="line"><span class="string">"cookies"</span>,</span><br><span class="line"><span class="string">"*://*.baidu.com/*"</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="设置-cookie"><a href="#设置-cookie" class="headerlink" title="设置 cookie"></a>设置 cookie</h3><p>设置 <code>cookie</code> 的时候我一直不太明白 <code>url</code> 和 <code>domain</code> 的区别, 文档也说的不是让人一看就清楚, 直到看来例子里面的代码才明白了 <code>url</code> 要怎么设置. 还有就是要清除 <code>url</code> 里面多余的 <code>.</code> 符号.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUrlByCookie</span>(<span class="params">cookie</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> domain = cookie.domain;</span><br><span class="line">  <span class="keyword">if</span> (domain.charAt(<span class="number">0</span>) == <span class="string">"."</span>) &#123;</span><br><span class="line">    domain = domain.substring(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="string">"http"</span> + (cookie.secure ? <span class="string">"s"</span> : <span class="string">""</span>) + <span class="string">"://"</span> + domain + cookie.path;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="页面是-https-的，自己的接口是-http-的会报不安全错误"><a href="#页面是-https-的，自己的接口是-http-的会报不安全错误" class="headerlink" title="页面是 https 的，自己的接口是 http 的会报不安全错误"></a>页面是 https 的，自己的接口是 http 的会报不安全错误</h3><p>可以通过通信传给 <code>background</code> 调用接口</p>
+<h3 id="使用-eval"><a href="#使用-eval" class="headerlink" title="使用 eval"></a>使用 eval</h3><p><a href="https://developer.chrome.com/extensions/contentSecurityPolicy" target="_blank" rel="noopener">Content Security Policy (CSP)</a></p>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># mainfest.json</span><br><span class="line"></span><br><span class="line">"content_security_policy": "<span class="keyword">script-src</span> <span class="string">'self'</span> https://example.com; <span class="keyword">object-src</span> <span class="string">'self'</span>"</span><br></pre></td></tr></table></figure>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://developer.chrome.com/extensions" target="_blank" rel="noopener">What are extensions?(google 官方文档)</a></li>
+<li><a href="http://open.chrome.360.cn/extension_dev/overview.html" target="_blank" rel="noopener">开发文档(360 的, 国内比较方便,但是不全)</a></li>
+<li><a href="https://www.cnblogs.com/liuxianan/p/chrome-plugin-develop.html" target="_blank" rel="noopener">【干货】Chrome 插件(扩展)开发全攻略</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener">Promise</a></li>
+<li><a href="https://www.ituring.com.cn/book/1421" target="_blank" rel="noopener">Chrome 扩展及应用开发（首发版）</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/chrome/" rel="tag"># chrome</a>
+              <a href="/blog/tags/扩展/" rel="tag"># 扩展</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2020/02/17/use-github-actions-auto-deploy-hexo/" rel="prev" title="使用Github Actions 来自动部署 Hexo 博客">
+      <i class="fa fa-chevron-left"></i> 使用Github Actions 来自动部署 Hexo 博客
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2020/02/19/tesseract-pay-qr-code-ocr/" rel="next" title="使用tesseract识别支付二维码">
+      使用tesseract识别支付二维码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Scripts"><span class="nav-number">1.</span> <span class="nav-text">Content Scripts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jsonp-请求回调未定义"><span class="nav-number">1.1.</span> <span class="nav-text">jsonp 请求回调未定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#content-script-css-文件引入图片资源"><span class="nav-number">1.2.</span> <span class="nav-text">content script css 文件引入图片资源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多个-content-分别在文档开始和结束注入"><span class="nav-number">1.3.</span> <span class="nav-text">多个 content 分别在文档开始和结束注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#屏蔽原始网页的内容"><span class="nav-number">1.4.</span> <span class="nav-text">屏蔽原始网页的内容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储相关"><span class="nav-number">2.</span> <span class="nav-text">存储相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#chrome-storage-获取不到数据"><span class="nav-number">2.1.</span> <span class="nav-text">chrome.storage 获取不到数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chrome-tabs"><span class="nav-number">3.</span> <span class="nav-text">chrome.tabs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展里面打开新标签页"><span class="nav-number">3.1.</span> <span class="nav-text">扩展里面打开新标签页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询和更新关闭标签页"><span class="nav-number">3.2.</span> <span class="nav-text">查询和更新关闭标签页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chrome-cookies"><span class="nav-number">4.</span> <span class="nav-text">chrome.cookies</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取-cookie"><span class="nav-number">4.1.</span> <span class="nav-text">获取 cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置-cookie"><span class="nav-number">4.2.</span> <span class="nav-text">设置 cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">5.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#页面是-https-的，自己的接口是-http-的会报不安全错误"><span class="nav-number">5.1.</span> <span class="nav-text">页面是 https 的，自己的接口是 http 的会报不安全错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-eval"><span class="nav-number">5.2.</span> <span class="nav-text">使用 eval</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

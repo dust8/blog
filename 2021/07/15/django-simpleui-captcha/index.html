@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dust8.github.io","root":"/blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="问题django 自带的后台管理比较丑, 就使用了 simpleui 的主题. 为了后台的安全, 需要增加登录验证码.网上有些零散的教程,实际用起来非常不方便.就想把该功能做出一个可复用的django app, 方便后续使用.开源出来,也方便大家使用. 成果django-simpleui-captcha  是一个 django 后台管理登录验证码插件. 界面 安装1pip install djan">
+<meta name="keywords" content="django,django-admin,django-simpleui-captcha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从问题到开源之django-simpleui-captcha项目">
+<meta property="og:url" content="https://dust8.github.io/blog/2021/07/15/django-simpleui-captcha/index.html">
+<meta property="og:site_name" content="Dust8 的博客">
+<meta property="og:description" content="问题django 自带的后台管理比较丑, 就使用了 simpleui 的主题. 为了后台的安全, 需要增加登录验证码.网上有些零散的教程,实际用起来非常不方便.就想把该功能做出一个可复用的django app, 方便后续使用.开源出来,也方便大家使用. 成果django-simpleui-captcha  是一个 django 后台管理登录验证码插件. 界面 安装1pip install djan">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2243a404d47a44b5ac073ea7dae90707~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:updated_time" content="2023-03-23T12:45:57.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从问题到开源之django-simpleui-captcha项目">
+<meta name="twitter:description" content="问题django 自带的后台管理比较丑, 就使用了 simpleui 的主题. 为了后台的安全, 需要增加登录验证码.网上有些零散的教程,实际用起来非常不方便.就想把该功能做出一个可复用的django app, 方便后续使用.开源出来,也方便大家使用. 成果django-simpleui-captcha  是一个 django 后台管理登录验证码插件. 界面 安装1pip install djan">
+<meta name="twitter:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2243a404d47a44b5ac073ea7dae90707~tplv-k3u1fbpfcp-watermark.image">
+
+<link rel="canonical" href="https://dust8.github.io/blog/2021/07/15/django-simpleui-captcha/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>从问题到开源之django-simpleui-captcha项目 | Dust8 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/blog/atom.xml" title="Dust8 的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dust8 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">读书百遍其义自见</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dust8.github.io/blog/2021/07/15/django-simpleui-captcha/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="dust8">
+      <meta itemprop="description" content="读书百遍其义自见">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dust8 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从问题到开源之django-simpleui-captcha项目
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-15 05:15:31" itemprop="dateCreated datePublished" datetime="2021-07-15T05:15:31+00:00">2021-07-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-23 12:45:57" itemprop="dateModified" datetime="2023-03-23T12:45:57+00:00">2023-03-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p><code>django</code> 自带的后台管理比较丑, 就使用了 <a href="https://github.com/newpanjing/simpleui" target="_blank" rel="noopener">simpleui</a> 的主题. 为了后台的安全, 需要增加登录验证码.网上有些零散的教程,实际用起来非常不方便.就想把该功能做出一个可复用的<code>django app</code>, 方便后续使用.开源出来,也方便大家使用.</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><p><a href="https://github.com/dust8/django-simpleui-captcha" target="_blank" rel="noopener">django-simpleui-captcha</a>  是一个 <code>django</code> 后台管理登录验证码插件.</p>
+<h3 id="界面"><a href="#界面" class="headerlink" title="界面"></a>界面</h3><p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2243a404d47a44b5ac073ea7dae90707~tplv-k3u1fbpfcp-watermark.image" alt="screenshoot1.png"></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install django-simpleui-captcha</span><br></pre></td></tr></table></figure>
+<h3 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h3><h4 id="1-添加-“simpleui-captcha”-到-INSTALLED-APPS-设置-注意要放在最前面"><a href="#1-添加-“simpleui-captcha”-到-INSTALLED-APPS-设置-注意要放在最前面" class="headerlink" title="1. 添加 “simpleui_captcha” 到 INSTALLED_APPS 设置, 注意要放在最前面"></a>1. 添加 “simpleui_captcha” 到 INSTALLED_APPS 设置, 注意要放在最前面</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INSTALLED_APPS = [</span><br><span class="line">    <span class="string">"simpleui_captcha"</span>,</span><br><span class="line">    <span class="string">"simpleui"</span>,</span><br><span class="line">    ... </span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h4 id="2-添加-simpleui-captcha-的-url-到你的项目-urls-py"><a href="#2-添加-simpleui-captcha-的-url-到你的项目-urls-py" class="headerlink" title="2. 添加 simpleui_captcha 的 url 到你的项目 urls.py ::"></a>2. 添加 <code>simpleui_captcha</code> 的 <code>url</code> 到你的项目 <code>urls.py</code> ::</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">path(<span class="string">'simpleui_captcha/'</span>, include(<span class="string">'simpleui_captcha.urls'</span>)),</span><br></pre></td></tr></table></figure>
+<h4 id="3-运行-python-manage-py-migrate-迁移验证码模型"><a href="#3-运行-python-manage-py-migrate-迁移验证码模型" class="headerlink" title="3. 运行 python manage.py migrate 迁移验证码模型"></a>3. 运行 <code>python manage.py migrate</code> 迁移验证码模型</h4><h2 id="开源过程"><a href="#开源过程" class="headerlink" title="开源过程"></a>开源过程</h2><h3 id="起名"><a href="#起名" class="headerlink" title="起名"></a>起名</h3><p>基于<code>django</code> web框架, 用的是<code>simpleui</code> 主题, 实现验证码功能, 故而叫<code>django-simpleui-captcha</code>, 让人一看名字就知道是做什么的,简单明了.</p>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>站在巨人的肩膀上,直接集成 <a href="https://github.com/mbi/django-simple-captcha" target="_blank" rel="noopener">django-simple-captcha</a>,添加验证码到登录表单,在修改成<code>simpleui</code>的样式.</p>
+<h4 id="登录表单"><a href="#登录表单" class="headerlink" title="登录表单"></a>登录表单</h4><p>后台的登录表单是<code>AdminAuthenticationForm</code><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># django.contrib.sites.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminSite</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_urls</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Admin-site-wide views.</span></span><br><span class="line">        urlpatterns = [</span><br><span class="line">            path(<span class="string">'login/'</span>, self.login, name=<span class="string">'login'</span>),</span><br><span class="line">            path(<span class="string">'logout/'</span>, wrap(self.logout), name=<span class="string">'logout'</span>),</span><br><span class="line">            ...</span><br><span class="line">        ]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">login</span><span class="params">(self, request, extra_context=None)</span>:</span></span><br><span class="line">        defaults = &#123;</span><br><span class="line">                <span class="string">'extra_context'</span>: context,</span><br><span class="line">                <span class="string">'authentication_form'</span>: self.login_form <span class="keyword">or</span> AdminAuthenticationForm,</span><br><span class="line">                <span class="string">'template_name'</span>: self.login_template <span class="keyword">or</span> <span class="string">'admin/login.html'</span>,</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以我们需要继承该表单,添加验证码字段</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># simpleui_captcha.forms.py</span></span><br><span class="line"><span class="keyword">from</span> captcha.fields <span class="keyword">import</span> CaptchaField</span><br><span class="line"><span class="keyword">from</span> django.contrib.admin.forms <span class="keyword">import</span> AdminAuthenticationForm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiCaptchaAdminAuthenticationForm</span><span class="params">(AdminAuthenticationForm)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        super().__init__(*args, **kwargs)</span><br><span class="line">        self.fields[<span class="string">'captcha'</span>] = CaptchaField()</span><br></pre></td></tr></table></figure>
+<p>然后赋值给站点的登录表单变量<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># simpleui_captcha.admin.py</span></span><br><span class="line"><span class="keyword">from</span> django.contrib <span class="keyword">import</span> admin</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> .forms <span class="keyword">import</span> MultiCaptchaAdminAuthenticationForm</span><br><span class="line"></span><br><span class="line">admin.AdminSite.login_form = MultiCaptchaAdminAuthenticationForm</span><br></pre></td></tr></table></figure></p>
+<h4 id="验证码相关url"><a href="#验证码相关url" class="headerlink" title="验证码相关url"></a>验证码相关url</h4><p>用来刷新验证码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># simpleui_captcha.urls.py</span></span><br><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> path, include</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(<span class="string">'captcha/'</span>, include(<span class="string">'captcha.urls'</span>)),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<h4 id="模板修改"><a href="#模板修改" class="headerlink" title="模板修改"></a>模板修改</h4><p>扩展后台登录模板文件,把验证码字段加入表单,并加入刷新验证码功能<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># simpleui_captcha/templates/admin/login.html</span><br><span class="line">&#123;% extends "admin/login.html" %&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> captchaEle = <span class="built_in">document</span>.querySelector(<span class="string">"img.captcha"</span>);</span></span><br><span class="line"><span class="actionscript">        captchaEle.onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">            $.getJSON(<span class="string">"/simpleui_captcha/captcha/refresh/"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                $(<span class="string">'img.captcha'</span>).attr(<span class="string">'src'</span>, result[<span class="string">'image_url'</span>]);</span></span><br><span class="line"><span class="javascript">                $(<span class="string">'#id_captcha_0'</span>).val(result[<span class="string">'key'</span>])</span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;;</span><br><span class="line">        ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">&#123;% block form %&#125;</span><br><span class="line">&#123;&#123; block.super &#125;&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">hidden</span>=<span class="string">"hidden"</span>&gt;</span></span><br><span class="line">    &#123;&#123; form.captcha &#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="发布"><a href="#发布" class="headerlink" title="发布"></a>发布</h3><p>按照<code>django</code>官方文档-<a href="https://docs.djangoproject.com/zh-hans/3.2/intro/reusable-apps/" target="_blank" rel="noopener">进阶指南：如何编写可重用程序</a> 的介绍, 完成项目,打包应用,发布应用.最后还可以提交到<code>github</code>上,让大家来贡献代码. 点击 <a href="https://github.com/dust8/django-simpleui-captcha" target="_blank" rel="noopener">django-simpleui-captcha</a> 给个<code>Star</code> 吧.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/django/" rel="tag"># django</a>
+              <a href="/blog/tags/django-admin/" rel="tag"># django-admin</a>
+              <a href="/blog/tags/django-simpleui-captcha/" rel="tag"># django-simpleui-captcha</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/2021/03/26/django-save_model/" rel="prev" title="django之save_model">
+      <i class="fa fa-chevron-left"></i> django之save_model
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/2021/08/31/whoogle-search/" rel="next" title="whoogle-search 元搜索引擎">
+      whoogle-search 元搜索引擎 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成果"><span class="nav-number">2.</span> <span class="nav-text">成果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#界面"><span class="nav-number">2.1.</span> <span class="nav-text">界面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">2.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快速开始"><span class="nav-number">2.3.</span> <span class="nav-text">快速开始</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-添加-“simpleui-captcha”-到-INSTALLED-APPS-设置-注意要放在最前面"><span class="nav-number">2.3.1.</span> <span class="nav-text">1. 添加 “simpleui_captcha” 到 INSTALLED_APPS 设置, 注意要放在最前面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-添加-simpleui-captcha-的-url-到你的项目-urls-py"><span class="nav-number">2.3.2.</span> <span class="nav-text">2. 添加 simpleui_captcha 的 url 到你的项目 urls.py ::</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-运行-python-manage-py-migrate-迁移验证码模型"><span class="nav-number">2.3.3.</span> <span class="nav-text">3. 运行 python manage.py migrate 迁移验证码模型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开源过程"><span class="nav-number">3.</span> <span class="nav-text">开源过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#起名"><span class="nav-number">3.1.</span> <span class="nav-text">起名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现思路"><span class="nav-number">3.2.</span> <span class="nav-text">实现思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#登录表单"><span class="nav-number">3.2.1.</span> <span class="nav-text">登录表单</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证码相关url"><span class="nav-number">3.2.2.</span> <span class="nav-text">验证码相关url</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模板修改"><span class="nav-number">3.2.3.</span> <span class="nav-text">模板修改</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布"><span class="nav-number">3.3.</span> <span class="nav-text">发布</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dust8</p>
+  <div class="site-description" itemprop="description">读书百遍其义自见</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">146</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dust8" title="GitHub → https://github.com/dust8" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.the5fire.com/" title="http://www.the5fire.com/" rel="noopener" target="_blank">the5fire</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2011 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dust8</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/pisces.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
