@@ -79,7 +79,7 @@ ExecStart=sudo swapon /data/swapfile
 [Install]
 WantedBy=multi-user.target
 ```
-完成后可以通过`systemctl cat my-swap` 产看该配置, 目测下是否正确.
+完成后可以通过`systemctl cat my-swap` 查看该配置, 目测下是否正确.
 运行`systemctl start my-swap` 执行该服务, 然后运行`free -h` 检查是否激活swap成功, 如果没有就在检查下配置.
 运行`systemctl enable my-swap` 则正式启用该服务, 重启后会自动运行该服务.
 
